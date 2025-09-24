@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY package-lock.json ./
 
-#COPY prisma ./prisma/
+COPY prisma ./prisma/
 
 # Instala as dependências com --legacy-peer-deps para resolver conflitos
 RUN npm cache clean --force
@@ -18,7 +18,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Gera o cliente do Prisma e faz o build da aplicação
-#RUN npx prisma generate
+RUN npx prisma generate
 RUN npm run build
 
 # Estágio de produção
@@ -27,10 +27,10 @@ RUN npm run build
 # WORKDIR /app
 
 # Copia apenas os arquivos necessários para produção
-# COPY --from=builder /app/node_modules ./node_modules
-# COPY --from=builder /app/package*.json ./
-# COPY --from=builder /app/prisma ./prisma
-# COPY --from=builder /app/dist ./dist
+ COPY --from=builder /app/node_modules ./node_modules
+ COPY --from=builder /app/package*.json ./
+ COPY --from=builder /app/prisma ./prisma
+ COPY --from=builder /app/dist ./dist
 
 # Gera o cliente do Prisma novamente (apenas para garantir)
 # RUN npx prisma generate
