@@ -15,7 +15,7 @@ RUN npm run build
 
 
 # Estágio de produção
-FROM node:22-alpine AS production
+FROM node:22-slim AS production
 
 WORKDIR /app
 
