@@ -1,0 +1,605 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table produto {
+  codEan String
+  codDum String
+  sku String [pk]
+  descricao String [not null]
+  shelf Int [not null]
+  tipoPeso TipoPeso [not null]
+  pesoLiquidoCaixa Decimal [not null]
+  pesoLiquidoUnidade Decimal [not null]
+  unPorCaixa Int [not null]
+  caixaPorPallet Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  segmento SegmentoProduto [not null]
+  empresa Empresa [not null]
+}
+
+Table Center {
+  centerId String [pk]
+  description String [not null]
+  state String [not null]
+  cluster String [not null, default: 'distribuicao']
+  configuracao Configuracao [not null]
+  configuracaoImpressaoMapa ConfiguracaoImpressaoMapa
+  dashboardProdutividadeCenter DashboardProdutividadeCenter [not null]
+  dashboardProdutividadeUser DashboardProdutividadeUser [not null]
+  demanda Demanda [not null]
+  pausaGeral PausaGeral [not null]
+  transporte Transporte [not null]
+  users User [not null]
+  assignedUsers UserCenter [not null]
+  devolucaoDemanda devolucao_demanda [not null]
+  devolucaoTransportadoras devolucao_transportadoras [not null]
+}
+
+Table imagem {
+  id String [pk]
+  url String [not null]
+  tipo String
+  processo_id String [not null]
+  tipoProcesso String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table ConfiguracaoImpressaoMapa {
+  id String [pk]
+  tipoImpressao TipoImpressao [not null]
+  quebraPalete Boolean [not null, default: false]
+  tipoQuebra TipoQuebraPalete
+  valorQuebra Decimal
+  separarPaleteFull Boolean [not null, default: false]
+  separarUnidades Boolean [not null, default: false]
+  exibirInfoCabecalho Boolean [not null, default: true]
+  segregarFifo String[] [not null]
+  ordemColunas String[] [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  centerId String [unique, not null]
+  dataMaximaPercentual Int [not null, default: 0]
+  dataMinimaPercentual Int [not null, default: 0]
+  atribuidoPorId String
+  atribuidoPor User
+  center Center [not null]
+}
+
+Table Configuracao {
+  id Int [pk, increment]
+  chave String [not null]
+  valor String [not null]
+  descricao String
+  centerId String
+  center Center
+
+  indexes {
+    (chave, centerId) [unique]
+  }
+}
+
+Table User {
+  id String [pk]
+  name String [not null]
+  password String
+  centerId String [not null]
+  token String
+  turno Turno [not null, default: 'NOITE']
+  resetSenha Boolean [not null, default: true]
+  configuracaoImpressaoMapa ConfiguracaoImpressaoMapa [not null]
+  cortesMercadoria CorteMercadoria [not null]
+  dashboardProdutividadeUser DashboardProdutividadeUser [not null]
+  demandasCadastradas Demanda [not null]
+  demandasFuncionario Demanda [not null]
+  impressoesMapa HistoricoImpressaoMapa [not null]
+  HistoricoStatusTransporte HistoricoStatusTransporte [not null]
+  paletes Palete [not null]
+  pausas Pausa [not null]
+  pausaGeral PausaGeral [not null]
+  transporte Transporte [not null]
+  devolucaoHistoricoStatus devolucao_historico_status [not null]
+  center Center [not null]
+  assignedCenters UserCenter [not null]
+  devolucaoDemanda devolucao_demanda [not null]
+  conferente devolucao_demanda [not null]
+}
+
+Table UserCenter {
+  userId String [not null]
+  centerId String [not null]
+  assignedAt DateTime [default: `now()`, not null]
+  processo String [not null, default: 'EXPEDICAO']
+  role Role [not null, default: 'FUNCIONARIO']
+  center Center [not null]
+  user User [not null]
+
+  indexes {
+    (userId, centerId, processo) [pk]
+  }
+}
+
+Table Transporte {
+  id Int [pk, increment]
+  numeroTransporte String [unique, not null]
+  status StatusTransporte [not null, default: 'AGUARDANDO_SEPARACAO']
+  nomeRota String [not null]
+  nomeTransportadora String [not null]
+  placa String [not null]
+  criadoEm DateTime [default: `now()`, not null]
+  atualizadoEm DateTime [not null]
+  cadastradoPorId String [not null]
+  dataExpedicao DateTime [not null]
+  centerId String [not null]
+  obs String
+  prioridade Int [not null, default: 0]
+  cortesMercadoria CorteMercadoria [not null]
+  historicoImpressaoMapa HistoricoImpressaoMapa [not null]
+  historicoStatus HistoricoStatusTransporte [not null]
+  paletes Palete [not null]
+  cadastradoPor User [not null]
+  center Center [not null]
+}
+
+Table CorteMercadoria {
+  id Int [pk, increment]
+  produto String [not null]
+  lote String [not null]
+  quantidade Int [not null]
+  unidadeMedida String [not null]
+  motivo MotivoCorteMercadoria [not null]
+  realizado Boolean [not null, default: false]
+  criadoEm DateTime [default: `now()`, not null]
+  atualizadoEm DateTime [not null]
+  criadoPorId String [not null]
+  transporteId String [not null]
+  criadoPor User [not null]
+  transporte Transporte [not null]
+}
+
+Table Palete {
+  id String [pk]
+  empresa String [not null]
+  quantidadeCaixas Int [not null]
+  quantidadeUnidades Int [not null]
+  quantidadePaletes Int [not null]
+  enderecoVisitado Int [not null]
+  segmento String [not null]
+  transporteId String [not null]
+  tipoProcesso TipoProcesso [not null, default: 'SEPARACAO']
+  criadoEm DateTime [default: `now()`, not null]
+  atualizadoEm DateTime [not null]
+  demandaId Int
+  status StatusPalete [not null, default: 'NAO_INICIADO']
+  validado Boolean [not null, default: false]
+  criadoPorId String [not null]
+  criadoPor User [not null]
+  demanda Demanda
+  transporte Transporte [not null]
+}
+
+Table Demanda {
+  id Int [pk, increment]
+  processo TipoProcesso [not null]
+  inicio DateTime [not null]
+  fim DateTime
+  status StatusDemanda [not null, default: 'EM_PROGRESSO']
+  cadastradoPorId String [not null]
+  turno Turno [not null]
+  funcionarioId String [not null]
+  criadoEm DateTime [default: `now()`, not null]
+  centerId String [not null]
+  obs String
+  cadastradoPor User [not null]
+  center Center [not null]
+  funcionario User [not null]
+  paletes Palete [not null]
+  pausas Pausa [not null]
+}
+
+Table HistoricoStatusTransporte {
+  id Int [pk, increment]
+  alteradoEm DateTime [default: `now()`, not null]
+  tipoEvento TipoEvento [not null]
+  descricao String [not null]
+  transporteId String [not null]
+  alteradoPorId String
+  alteradoPor User
+  transporte Transporte [not null]
+}
+
+Table HistoricoImpressaoMapa {
+  id Int [pk, increment]
+  impressoEm DateTime [default: `now()`, not null]
+  transporteId String [not null]
+  impressoPorId String [not null]
+  tipoImpressao TipoProcesso [not null]
+  impressoPor User [not null]
+  transporte Transporte [not null]
+}
+
+Table Pausa {
+  id Int [pk, increment]
+  inicio DateTime [not null]
+  fim DateTime
+  motivo String
+  descricao String
+  demandaId Int [not null]
+  registradoPorId String [not null]
+  pausaGeralId Int
+  demanda Demanda [not null]
+  pausaGeral PausaGeral
+  registradoPor User [not null]
+}
+
+Table PausaGeral {
+  id Int [pk, increment]
+  inicio DateTime [not null]
+  fim DateTime
+  motivo String
+  centerId String [not null]
+  processo TipoProcesso [not null]
+  turno Turno [not null]
+  registradoPorId String [not null]
+  criadoEm DateTime [default: `now()`, not null]
+  atualizadoEm DateTime [not null]
+  pausas Pausa [not null]
+  center Center [not null]
+  registradoPor User [not null]
+}
+
+Table DashboardProdutividadeUser {
+  id Int [pk, increment]
+  dataRegistro DateTime [not null]
+  centerId String [not null]
+  funcionarioId String [not null]
+  totalCaixas Int [not null]
+  totalUnidades Int [not null]
+  totalPaletes Int [not null]
+  totalEnderecos Int [not null]
+  totalPausasQuantidade Int [not null]
+  totalPausasTempo Int [not null]
+  totalTempoTrabalhado Int [not null]
+  totalDemandas Int [not null]
+  processo TipoProcesso [not null]
+  turno Turno [not null]
+  criadoEm DateTime [default: `now()`, not null]
+  atualizadoEm DateTime [not null]
+  center Center [not null]
+  funcionario User [not null]
+
+  indexes {
+    (funcionarioId, centerId, processo, dataRegistro, turno) [unique]
+  }
+}
+
+Table DashboardProdutividadeCenter {
+  id Int [pk, increment]
+  dataRegistro DateTime [not null]
+  centerId String [not null]
+  totalCaixas Int [not null]
+  totalUnidades Int [not null]
+  totalPaletes Int [not null]
+  totalEnderecos Int [not null]
+  totalPausasQuantidade Int [not null]
+  totalPausasTempo Int [not null]
+  totalTempoTrabalhado Int [not null]
+  totalDemandas Int [not null]
+  processo TipoProcesso [not null]
+  turno Turno [not null]
+  criadoEm DateTime [default: `now()`, not null]
+  atualizadoEm DateTime [not null]
+  center Center [not null]
+
+  indexes {
+    (centerId, processo, dataRegistro, turno) [unique]
+  }
+}
+
+Table devolucao_demanda {
+  id Int [pk, increment]
+  placa String [not null]
+  motorista String [not null]
+  idTransportadora String
+  telefone String
+  cargaSegregada Boolean [not null, default: false]
+  retornoPalete Boolean [not null, default: false]
+  quantidadePaletes Int [default: 0]
+  centerId String [not null]
+  center Center [not null]
+  adicionadoPorId String [not null]
+  adicionadoPor User [not null]
+  conferenteId String
+  conferente User
+  criadoEm DateTime [default: `now()`, not null]
+  atualizadoEm DateTime [not null]
+  status StatusDevolucao [not null, default: 'AGUARDANDO_LIBERACAO']
+  fechouComAnomalia Boolean
+  liberadoParaConferenciaEm DateTime
+  inicioConferenciaEm DateTime
+  fimConferenciaEm DateTime
+  finalizadoEm DateTime
+  senha String [not null]
+  devolucaoNotas devolucao_notas [not null]
+  devolucaoAnomalias devolucao_anomalias [not null]
+  devolucaoItens devolucao_itens [not null]
+  historicoStatus devolucao_historico_status [not null]
+  devolucaoCheckList devolucao_check_list
+}
+
+Table devolucao_historico_status {
+  id Int [pk, increment]
+  devolucaoDemandaId Int [not null]
+  devolucaoDemanda devolucao_demanda [not null]
+  status StatusDevolucao [not null]
+  responsavelId String
+  responsavel User
+  criadoEm DateTime [default: `now()`, not null]
+}
+
+Table devolucao_notas {
+  id Int [pk, increment]
+  empresa Empresa [not null]
+  devolucaoDemandaId Int [not null]
+  devolucaoDemanda devolucao_demanda [not null]
+  notaFiscal String [not null]
+  motivoDevolucao String [not null]
+  descMotivoDevolucao String
+  nfParcial String
+  idViagemRavex String
+  devolucaoItens devolucao_itens [not null]
+  criadoEm DateTime [default: `now()`, not null]
+  atualizadoEm DateTime [not null]
+  tipo TipoDevolucaoNotas [not null, default: 'DEVOLUCAO']
+
+  indexes {
+    (empresa, notaFiscal, tipo) [unique]
+  }
+}
+
+Table devolucao_itens {
+  id Int [pk, increment]
+  sku String [not null]
+  descricao String [not null]
+  lote String
+  fabricacao DateTime
+  sif String
+  quantidadeCaixas Int
+  quantidadeUnidades Int
+  tipo TipoDevolucaoItens [not null]
+  devolucaoNotasId Int
+  devolucaoNotas devolucao_notas
+  demandaId Int [not null]
+  demanda devolucao_demanda [not null]
+  avariaCaixas Int
+  avariaUnidades Int
+}
+
+Table devolucao_anomalias {
+  id Int [pk, increment]
+  demandaId Int [not null]
+  demanda devolucao_demanda [not null]
+  tipo TipoDevolucaoAnomalias [not null]
+  tratado Boolean [not null, default: false]
+  sku String [not null]
+  descricao String [not null]
+  lote String [not null]
+  quantidadeCaixas Int [not null]
+  quantidadeUnidades Int [not null]
+  criadoEm DateTime [default: `now()`, not null]
+  atualizadoEm DateTime [not null]
+}
+
+Table devolucao_transportadoras {
+  id Int [pk, increment]
+  nome String [not null]
+  centerId String [not null]
+  center Center [not null]
+  criadoEm DateTime [default: `now()`, not null]
+  atualizadoEm DateTime [not null]
+
+  indexes {
+    (nome, centerId) [unique]
+  }
+}
+
+Table devolucao_check_list {
+  id Int [pk, increment]
+  temperaturaBau Float [not null]
+  temperaturaProduto Float [not null]
+  demandaId Int [unique, not null]
+  demanda devolucao_demanda [not null]
+  criadoEm DateTime [default: `now()`, not null]
+  atualizadoEm DateTime [not null]
+}
+
+Enum StatusTransporte {
+  AGUARDANDO_SEPARACAO
+  EM_SEPARACAO
+  SEPARACAO_CONCLUIDA
+  EM_CONFERENCIA
+  CONFERENCIA_CONCLUIDA
+  EM_CARREGAMENTO
+  CARREGAMENTO_CONCLUIDO
+  FATURADO
+  LIBERADO_PORTARIA
+  CANCELADO
+}
+
+Enum StatusPalete {
+  NAO_INICIADO
+  EM_PROGRESSO
+  CONCLUIDO
+  EM_PAUSA
+}
+
+Enum TipoProcesso {
+  SEPARACAO
+  CARREGAMENTO
+  CONFERENCIA
+}
+
+Enum StatusDemanda {
+  EM_PROGRESSO
+  FINALIZADA
+  PAUSA
+  CANCELADA
+}
+
+Enum Role {
+  FUNCIONARIO
+  USER
+  ADMIN
+  MASTER
+}
+
+Enum Turno {
+  MANHA
+  TARDE
+  NOITE
+}
+
+Enum TipoImpressao {
+  TRANSPORTE
+  CLIENTE
+}
+
+Enum TipoQuebraPalete {
+  LINHAS
+  PERCENTUAL
+}
+
+Enum TipoEvento {
+  CRIACAO_TRANSPORTE
+  ATRIBUICAO_PALLET
+  FINALIZACAO_DEMANDA
+  LIBERACAO_CONFERENCIA
+  OUTRO
+}
+
+Enum MotivoCorteMercadoria {
+  FALTA_MERCADORIA
+  FALTA_ESPACO
+}
+
+Enum Empresa {
+  ITB
+  LDB
+  DPA
+}
+
+Enum TipoDevolucaoItens {
+  CONTABIL
+  FISICO
+}
+
+Enum TipoDevolucaoAnomalias {
+  AVARIA
+  FALTA
+  SOBRA
+}
+
+Enum StatusDevolucao {
+  AGUARDANDO_LIBERACAO
+  AGUARDANDO_CONFERENCIA
+  EM_CONFERENCIA
+  CONFERENCIA_FINALIZADA
+  FINALIZADO
+  CANCELADO
+}
+
+Enum TipoPeso {
+  PVAR
+  PPAR
+}
+
+Enum SegmentoProduto {
+  SECO
+  REFR
+}
+
+Enum TipoDevolucaoNotas {
+  DEVOLUCAO
+  DEVOLUCAO_PARCIAL
+  REENTREGA
+}
+
+Ref: ConfiguracaoImpressaoMapa.atribuidoPorId > User.id
+
+Ref: ConfiguracaoImpressaoMapa.centerId - Center.centerId
+
+Ref: Configuracao.centerId > Center.centerId
+
+Ref: User.centerId > Center.centerId
+
+Ref: UserCenter.centerId > Center.centerId
+
+Ref: UserCenter.userId > User.id
+
+Ref: Transporte.cadastradoPorId > User.id
+
+Ref: Transporte.centerId > Center.centerId
+
+Ref: CorteMercadoria.criadoPorId > User.id
+
+Ref: CorteMercadoria.transporteId > Transporte.numeroTransporte [delete: Cascade]
+
+Ref: Palete.criadoPorId > User.id
+
+Ref: Palete.demandaId > Demanda.id [delete: Cascade]
+
+Ref: Palete.transporteId > Transporte.numeroTransporte [delete: Cascade]
+
+Ref: Demanda.cadastradoPorId > User.id
+
+Ref: Demanda.centerId > Center.centerId
+
+Ref: Demanda.funcionarioId > User.id
+
+Ref: HistoricoStatusTransporte.alteradoPorId > User.id
+
+Ref: HistoricoStatusTransporte.transporteId > Transporte.numeroTransporte [delete: Cascade]
+
+Ref: HistoricoImpressaoMapa.impressoPorId > User.id
+
+Ref: HistoricoImpressaoMapa.transporteId > Transporte.numeroTransporte [delete: Cascade]
+
+Ref: Pausa.demandaId > Demanda.id [delete: Cascade]
+
+Ref: Pausa.pausaGeralId > PausaGeral.id
+
+Ref: Pausa.registradoPorId > User.id
+
+Ref: PausaGeral.centerId > Center.centerId
+
+Ref: PausaGeral.registradoPorId > User.id
+
+Ref: DashboardProdutividadeUser.centerId > Center.centerId
+
+Ref: DashboardProdutividadeUser.funcionarioId > User.id
+
+Ref: DashboardProdutividadeCenter.centerId > Center.centerId
+
+Ref: devolucao_demanda.centerId > Center.centerId
+
+Ref: devolucao_demanda.adicionadoPorId > User.id
+
+Ref: devolucao_demanda.conferenteId > User.id
+
+Ref: devolucao_historico_status.devolucaoDemandaId > devolucao_demanda.id
+
+Ref: devolucao_historico_status.responsavelId > User.id
+
+Ref: devolucao_notas.devolucaoDemandaId > devolucao_demanda.id
+
+Ref: devolucao_itens.devolucaoNotasId > devolucao_notas.id
+
+Ref: devolucao_itens.demandaId > devolucao_demanda.id
+
+Ref: devolucao_anomalias.demandaId > devolucao_demanda.id
+
+Ref: devolucao_transportadoras.centerId > Center.centerId
+
+Ref: devolucao_check_list.demandaId - devolucao_demanda.id

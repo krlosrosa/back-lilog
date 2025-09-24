@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  back-produtividade:
+    build: .
+    container_name: back-produtividade
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DATABASE_URL=${DATABASE_URL}
+      - PORT=${PORT}
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.produtividade.rule=Host(`${PRODUTIVIDADE_HOST}`)"
+      - "traefik.http.routers.produtividade.entrypoints=websecure"
+      - "traefik.http.routers.produtividade.tls.certresolver=leresolver"
+      - "traefik.http.services.produtividade.loadbalancer.server.port=${PORT}"
+
+    networks:
+      - traefik_proxy
+
+networks:
+  traefik_proxy:
+    external:
+      name: root_default

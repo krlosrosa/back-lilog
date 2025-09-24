@@ -1,0 +1,574 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output = "../src/generated/ERD.svg"
+}
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model produto {
+  codEan String?
+  codDum String?
+  sku String @id
+  descricao String
+  shelf Int
+  tipoPeso TipoPeso
+  pesoLiquidoCaixa Decimal
+  pesoLiquidoUnidade Decimal
+  unPorCaixa Int
+  caixaPorPallet Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  segmento SegmentoProduto
+  empresa Empresa
+
+ @@map("produto")
+}
+
+model Center {
+  centerId                  String                     @id @unique
+  description               String
+  state                     String
+  cluster                   String                     @default("distribuicao")
+  configuracao              Configuracao[]
+  configuracaoImpressaoMapa ConfiguracaoImpressaoMapa?
+  dashboardProdutividadeCenter    DashboardProdutividadeCenter[]
+  dashboardProdutividadeUser    DashboardProdutividadeUser[]
+  demanda                   Demanda[]
+  pausaGeral                PausaGeral[]
+  transporte                Transporte[]
+  users                     User[]
+  assignedUsers             UserCenter[]
+  devolucaoDemanda DevolucaoDemanda[]
+  devolucaoTransportadoras DevolucaoTransportadoras[]
+  rulesEngines RulesEngines[]
+}
+
+model Imagem {
+  id String @id @default(cuid())
+  url String
+  tipo String? 
+  processo_id String
+  tipoProcesso String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("imagem")
+}
+
+model ConfiguracaoImpressaoMapa {
+  id                   String            @id @default(cuid())
+  tipoImpressao        TipoImpressao
+  quebraPalete         Boolean           @default(false)
+  tipoQuebra           TipoQuebraPalete?
+  valorQuebra          Decimal?
+  separarPaleteFull    Boolean           @default(false)
+  separarUnidades      Boolean           @default(false)
+  exibirInfoCabecalho  ExibirClienteCabecalhoEnum?           @default(NENHUM)
+  segregarFifo         String[]
+  dataMaximaPercentual Int               @default(0)
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  centerId             String            @unique
+  atribuidoPorId       String?
+  atribuidoPor         User?             @relation(fields: [atribuidoPorId], references: [id])
+  center               Center            @relation(fields: [centerId], references: [centerId])
+}
+
+model Configuracao {
+  id        Int     @id @default(autoincrement())
+  chave     String
+  valor     String
+  descricao String?
+  centerId  String?
+  center    Center? @relation(fields: [centerId], references: [centerId])
+
+  @@unique([chave, centerId])
+}
+
+model User {
+  id                        String                      @id
+  name                      String
+  password                  String?
+  centerId                  String
+  token                     String?
+  turno                     Turno                       @default(NOITE)
+  resetSenha                Boolean                     @default(true)
+  configuracaoImpressaoMapa ConfiguracaoImpressaoMapa[]
+  cortesMercadoria          CorteMercadoria[]
+  dashboardProdutividadeUser    DashboardProdutividadeUser[]
+  demandasCadastradas       Demanda[]                   @relation("CadastradoPor")
+  demandasFuncionario       Demanda[]                   @relation("Funcionario")
+  impressoesMapa            HistoricoImpressaoMapa[]
+  HistoricoStatusTransporte HistoricoStatusTransporte[]
+  paletes                   Palete[]
+  pausas                    Pausa[]
+  pausaGeral                PausaGeral[]
+  transporte                Transporte[]
+  devolucaoHistoricoStatus DevolucaoHistoricoStatus[]
+  center                    Center                      @relation(fields: [centerId], references: [centerId])
+  assignedCenters           UserCenter[]
+  devolucaoDemanda DevolucaoDemanda[] @relation("AdicionadoPor")
+  conferente DevolucaoDemanda[] @relation("Conferente")
+}
+
+model UserCenter {
+  userId     String
+  centerId   String
+  assignedAt DateTime @default(now())
+  processo   String   @default("EXPEDICAO")
+  role       Role     @default(FUNCIONARIO)
+  center     Center   @relation(fields: [centerId], references: [centerId])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@id([userId, centerId, processo])
+}
+
+model Transporte {
+  id                     Int                         @id @default(autoincrement())
+  numeroTransporte       String                      @unique
+  status                 StatusTransporte            @default(AGUARDANDO_SEPARACAO)
+  nomeRota               String
+  nomeTransportadora     String
+  placa                  String
+  criadoEm               DateTime                    @default(now())
+  atualizadoEm           DateTime                    @updatedAt
+  cadastradoPorId        String
+  dataExpedicao          DateTime                    @db.Timestamp(6)
+  centerId               String
+  obs                    String?
+  prioridade             Int                         @default(0)
+  cortesMercadoria       CorteMercadoria[]
+  historicoImpressaoMapa HistoricoImpressaoMapa[]
+  historicoStatus        HistoricoStatusTransporte[]
+  paletes                Palete[]
+  cadastradoPor          User                        @relation(fields: [cadastradoPorId], references: [id])
+  center                 Center                      @relation(fields: [centerId], references: [centerId])
+}
+
+model CorteMercadoria {
+  id            Int                   @id @default(autoincrement())
+  produto       String
+  lote          String
+  quantidade    Int
+  unidadeMedida String
+  motivo        MotivoCorteMercadoria
+  realizado     Boolean               @default(false)
+  criadoEm      DateTime              @default(now())
+  atualizadoEm  DateTime              @updatedAt
+  criadoPorId   String
+  transporteId  String
+  criadoPor     User                  @relation(fields: [criadoPorId], references: [id])
+  transporte    Transporte            @relation(fields: [transporteId], references: [numeroTransporte], onDelete: Cascade)
+}
+
+model Palete {
+  id                 String       @id
+  empresa            String
+  quantidadeCaixas   Int
+  quantidadeUnidades Int
+  quantidadePaletes  Int
+  enderecoVisitado   Int
+  segmento           String
+  transporteId       String
+  tipoProcesso       TipoProcesso @default(SEPARACAO)
+  criadoEm           DateTime     @default(now())
+  atualizadoEm       DateTime     @updatedAt
+  demandaId          Int?
+  status             StatusPalete @default(NAO_INICIADO)
+  validado           Boolean      @default(false)
+  criadoPorId        String
+  criadoPor          User         @relation(fields: [criadoPorId], references: [id])
+  demanda            Demanda?     @relation(fields: [demandaId], references: [id], onDelete: Cascade)
+  transporte         Transporte   @relation(fields: [transporteId], references: [numeroTransporte], onDelete: Cascade)
+}
+
+model Demanda {
+  id              Int           @id @default(autoincrement())
+  processo        TipoProcesso
+  inicio          DateTime
+  fim             DateTime?
+  status          StatusDemanda @default(EM_PROGRESSO)
+  cadastradoPorId String
+  turno           Turno
+  funcionarioId   String
+  criadoEm        DateTime      @default(now())
+  centerId        String
+  obs             String?
+  cadastradoPor   User          @relation("CadastradoPor", fields: [cadastradoPorId], references: [id])
+  center          Center        @relation(fields: [centerId], references: [centerId])
+  funcionario     User          @relation("Funcionario", fields: [funcionarioId], references: [id])
+  paletes         Palete[]
+  pausas          Pausa[]
+}
+
+model HistoricoStatusTransporte {
+  id            Int        @id @default(autoincrement())
+  alteradoEm    DateTime   @default(now())
+  tipoEvento    TipoEvento
+  descricao     String
+  transporteId  String
+  alteradoPorId String?
+  alteradoPor   User?      @relation(fields: [alteradoPorId], references: [id])
+  transporte    Transporte @relation(fields: [transporteId], references: [numeroTransporte], onDelete: Cascade)
+}
+
+model HistoricoImpressaoMapa {
+  id            Int          @id @default(autoincrement())
+  impressoEm    DateTime     @default(now())
+  transporteId  String
+  impressoPorId String
+  tipoImpressao TipoProcesso
+  impressoPor   User         @relation(fields: [impressoPorId], references: [id])
+  transporte    Transporte   @relation(fields: [transporteId], references: [numeroTransporte], onDelete: Cascade)
+}
+
+model Pausa {
+  id              Int         @id @default(autoincrement())
+  inicio          DateTime
+  fim             DateTime?
+  motivo          String?
+  descricao       String?
+  demandaId       Int
+  registradoPorId String
+  pausaGeralId    Int?
+  demanda         Demanda     @relation(fields: [demandaId], references: [id], onDelete: Cascade)
+  pausaGeral      PausaGeral? @relation(fields: [pausaGeralId], references: [id])
+  registradoPor   User        @relation(fields: [registradoPorId], references: [id])
+}
+
+model PausaGeral {
+  id              Int          @id @default(autoincrement())
+  inicio          DateTime
+  fim             DateTime?
+  motivo          String?
+  centerId        String
+  processo        TipoProcesso
+  turno           Turno
+  registradoPorId String
+  criadoEm        DateTime     @default(now())
+  atualizadoEm    DateTime     @updatedAt
+  pausas          Pausa[]
+  center          Center       @relation(fields: [centerId], references: [centerId])
+  registradoPor   User         @relation(fields: [registradoPorId], references: [id])
+}
+
+model DashboardProdutividadeUser {
+  id                    Int          @id @default(autoincrement())
+  dataRegistro          DateTime
+  centerId              String
+  funcionarioId         String
+  totalCaixas           Int
+  totalUnidades         Int
+  totalPaletes          Int
+  totalEnderecos        Int
+  totalPausasQuantidade Int
+  totalPausasTempo      Int
+  totalTempoTrabalhado  Int
+  totalDemandas         Int
+  processo              TipoProcesso
+  turno                 Turno
+  criadoEm              DateTime     @default(now())
+  atualizadoEm          DateTime     @updatedAt
+  center                Center       @relation(fields: [centerId], references: [centerId])
+  funcionario           User         @relation(fields: [funcionarioId], references: [id])
+
+  @@unique([funcionarioId, centerId, processo, dataRegistro, turno])
+}
+
+model DashboardProdutividadeCenter {
+  id                    Int          @id @default(autoincrement())
+  dataRegistro          DateTime
+  centerId              String
+  totalCaixas           Int
+  totalUnidades         Int
+  totalPaletes          Int
+  totalEnderecos        Int
+  totalPausasQuantidade Int
+  totalPausasTempo      Int
+  totalTempoTrabalhado  Int
+  totalDemandas         Int
+  processo              TipoProcesso
+  turno                 Turno
+  criadoEm              DateTime     @default(now())
+  atualizadoEm          DateTime     @updatedAt
+  center                Center       @relation(fields: [centerId], references: [centerId])
+
+  @@unique([centerId, processo, dataRegistro, turno])
+}
+
+
+model DevolucaoDemanda {
+  id Int @id @default(autoincrement())
+  placa String
+  motorista String
+  idTransportadora String?
+  telefone String?
+  cargaSegregada Boolean @default(false)
+  retornoPalete Boolean @default(false)
+  quantidadePaletes Int? @default(0)
+  doca String?
+  centerId String
+  center Center @relation(fields: [centerId], references: [centerId])
+  adicionadoPorId String
+  adicionadoPor User @relation("AdicionadoPor",fields: [adicionadoPorId], references: [id])
+  conferenteId String?
+  conferente User? @relation("Conferente",fields: [conferenteId], references: [id])
+  criadoEm DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+  status StatusDevolucao @default(AGUARDANDO_LIBERACAO)
+  fechouComAnomalia Boolean? // Null enquanto não finalizado, true/false ao finalizar
+  liberadoParaConferenciaEm DateTime? // Que horas foi liberado pro armazem
+  inicioConferenciaEm DateTime?       // Que horas começou a conferir
+  fimConferenciaEm DateTime?          // Que horas terminou a conferência
+  finalizadoEm DateTime?              // Que horas o processo foi finalizado por completo
+  senha String
+  devolucaoNotas DevolucaoNotas[]
+  devolucaoAnomalias DevolucaoAnomalias[]
+  devolucaoItens DevolucaoItens[]
+  historicoStatus DevolucaoHistoricoStatus[] // Relação com o histórico
+  devolucaoCheckList DevolucaoCheckList?
+
+  @@map("devolucao_demanda")  
+}
+
+model DevolucaoHistoricoStatus {
+  id Int @id @default(autoincrement())
+  
+  devolucaoDemandaId Int
+  devolucaoDemanda DevolucaoDemanda @relation(fields: [devolucaoDemandaId], references: [id], onDelete: Cascade)
+  
+  status StatusDevolucao // O status que foi atribuído neste evento
+  responsavelId String? 
+  responsavel   User?   @relation(fields: [responsavelId], references: [id])
+  
+  criadoEm DateTime @default(now()) // Timestamp do evento
+
+  @@map("devolucao_historico_status")
+}
+
+model DevolucaoNotas {
+  id Int @id @default(autoincrement())
+  empresa Empresa
+  devolucaoDemandaId Int
+  devolucaoDemanda DevolucaoDemanda @relation(fields: [devolucaoDemandaId], references: [id], onDelete: Cascade)
+  notaFiscal String
+  motivoDevolucao String
+  descMotivoDevolucao String?
+  nfParcial String?
+  idViagemRavex String?
+  criadoEm DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+  tipo TipoDevolucaoNotas @default(DEVOLUCAO)
+
+  @@unique([empresa, notaFiscal, tipo])
+  @@map("devolucao_notas")
+}
+
+model DevolucaoItens {
+  id Int @id @default(autoincrement())
+  sku String
+  descricao String
+  lote String?
+  fabricacao DateTime?
+  sif String?
+  quantidadeCaixas Int?
+  quantidadeUnidades Int?
+  tipo TipoDevolucaoItens
+  devolucaoNotasId String?
+  demandaId Int
+  demanda DevolucaoDemanda @relation(fields: [demandaId], references: [id], onDelete: Cascade)
+  avariaCaixas Int?
+  avariaUnidades Int?
+
+  @@map("devolucao_itens")
+}
+
+model DevolucaoAnomalias {
+  id Int @id @default(autoincrement())
+  demandaId Int
+  demanda   DevolucaoDemanda @relation(fields: [demandaId], references: [id])
+  tipo TipoDevolucaoAnomalias
+  tratado Boolean @default(false)
+  sku String
+  descricao String
+  lote String
+  quantidadeCaixas Int
+  quantidadeUnidades Int
+  criadoEm DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@map("devolucao_anomalias")
+}
+
+model DevolucaoTransportadoras {
+  id Int @id @default(autoincrement())
+  nome String
+  centerId String
+  center Center @relation(fields: [centerId], references: [centerId])
+  criadoEm DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@unique([nome, centerId])
+  @@map("devolucao_transportadoras")
+}
+
+model DevolucaoCheckList {
+  id Int @id @default(autoincrement())
+  temperaturaBau Float
+  temperaturaProduto Float
+  demandaId Int @unique
+  demanda DevolucaoDemanda @relation(fields: [demandaId], references: [id], onDelete: Cascade)
+  criadoEm DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@map("devolucao_check_list")
+}
+
+// RULES ENGINES
+
+model RulesEngines {
+  id Int @id @default(autoincrement())
+  name String
+  description String
+  centerId String
+  center Center @relation(fields: [centerId], references: [centerId])
+  enabled Boolean @default(true)
+  conditions Json
+
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, centerId])
+  @@index([centerId,enabled])
+  @@map("rules_engines")
+}
+
+
+
+
+enum StatusTransporte {
+  AGUARDANDO_SEPARACAO
+  EM_SEPARACAO
+  SEPARACAO_CONCLUIDA
+  EM_CONFERENCIA
+  CONFERENCIA_CONCLUIDA
+  EM_CARREGAMENTO
+  CARREGAMENTO_CONCLUIDO
+  FATURADO
+  LIBERADO_PORTARIA
+  CANCELADO
+}
+
+enum StatusPalete {
+  NAO_INICIADO
+  EM_PROGRESSO
+  CONCLUIDO
+  EM_PAUSA
+}
+
+enum TipoProcesso {
+  SEPARACAO
+  CARREGAMENTO
+  CONFERENCIA
+}
+
+enum StatusDemanda {
+  EM_PROGRESSO
+  FINALIZADA
+  PAUSA
+  CANCELADA
+}
+
+enum Role {
+  FUNCIONARIO
+  USER
+  ADMIN
+  MASTER
+}
+
+enum Turno {
+  MANHA
+  TARDE
+  NOITE
+}
+
+enum TipoImpressao {
+  TRANSPORTE
+  CLIENTE
+}
+
+enum TipoQuebraPalete {
+  LINHAS
+  PERCENTUAL
+}
+
+enum TipoEvento {
+  CRIACAO_TRANSPORTE
+  ATRIBUICAO_PALLET
+  FINALIZACAO_DEMANDA
+  LIBERACAO_CONFERENCIA
+  OUTRO
+}
+
+enum MotivoCorteMercadoria {
+  FALTA_MERCADORIA
+  FALTA_ESPACO
+}
+
+enum Empresa {
+  ITB
+  LDB
+  DPA
+}
+
+enum TipoDevolucaoItens {
+  CONTABIL
+  FISICO
+}
+
+enum TipoDevolucaoAnomalias {
+  AVARIA
+  FALTA
+  SOBRA
+}
+
+enum StatusDevolucao {
+  AGUARDANDO_LIBERACAO // Demanda criada, mas ainda não disponível para o armazém
+  AGUARDANDO_CONFERENCIA // Liberado para o armazém, aguardando um conferente iniciar
+  EM_CONFERENCIA // Conferência em andamento
+  CONFERENCIA_FINALIZADA // Conferência terminada, aguardando finalização do processo
+  FINALIZADO // Processo concluído
+  CANCELADO // Processo cancelado
+}
+
+
+enum TipoPeso {
+  PVAR
+  PPAR
+}
+
+enum SegmentoProduto {
+  SECO
+  REFR
+}
+
+enum TipoDevolucaoNotas {
+  DEVOLUCAO
+  DEVOLUCAO_PARCIAL
+  REENTREGA
+}
+
+enum ExibirClienteCabecalhoEnum {
+  PRIMEIRO
+  TODOS
+  NENHUM
+}

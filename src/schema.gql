@@ -1,0 +1,162 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type ProdutividadeModel {
+  idDemanda: Float!
+  empresa: String!
+  centerId: String!
+  processo: String!
+  segmento: String!
+  inicio: String!
+  fim: String
+  cadastradoPorId: String!
+  turno: String!
+  funcionarioId: String!
+  nomeFuncionario: String!
+  statusDemanda: String!
+  caixas: Float!
+  unidades: Float!
+  paletes: Float!
+  visitas: Float!
+  pausas: Float!
+  tempoTrabalhado: Float!
+  tempoPausas: Float!
+  tempoTotal: Float!
+  produtividade: Float!
+}
+
+type OverViewModel {
+  processos: Float!
+  emAndamento: Float!
+  concluidos: Float!
+  totalCaixas: Float!
+  totalUnidades: Float!
+  produtividade: Float!
+}
+
+type PausaModel {
+  id: Float!
+  inicio: String!
+  fim: String
+  motivo: String!
+  descricao: String!
+  registradoPorId: String!
+  pausaGeralId: String
+}
+
+type PaleteModel {
+  id: String!
+  empresa: String!
+  quantidadeCaixas: Float!
+  quantidadeUnidades: Float!
+  quantidadePaletes: Float!
+  enderecoVisitado: Float!
+  segmento: String!
+  transporteId: String!
+  tipoProcesso: String!
+  criadoEm: String!
+  atualizadoEm: String!
+  status: String!
+  validado: Boolean!
+  criadoPorId: String!
+}
+
+type InfoDemandaModel {
+  id: Float!
+  processo: String!
+  inicio: String!
+  fim: String
+  status: String!
+  cadastradoPorId: String!
+  turno: String!
+  funcionarioId: String!
+  funcionario: String!
+  criadoEm: String!
+  centerId: String!
+  obs: String
+  tempoTrabalhado: Float!
+  tempoPausas: Float!
+  tempoTotal: Float!
+  produtividade: Float!
+  pausas: [PausaModel!]!
+  paletes: [PaleteModel!]!
+}
+
+type AuthorizationModel {
+  userId: String!
+  processo: String!
+  role: String!
+}
+
+type Teste {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type OutputTransporteModel {
+  naoIniciado: Float!
+  emSeparacao: Float!
+  emConferencia: Float!
+  emCarregamento: Float!
+  carregamentoConcluido: Float!
+  faturado: Float!
+}
+
+type Query {
+  produtividade(buscarProdutividadeCommand: InputProdutividadeModelGraph!): [ProdutividadeModel!]!
+  overViewProdutividade(overViewProdutividadeCommand: InputOverViewModelGraph!): OverViewModel!
+  infoDemanda(paleteId: String!): InfoDemandaModel!
+  listarPermissoesParaCasl(authorizationModelInput: AuthorizationModelInput!): [AuthorizationModel!]!
+  teste(id: Int!): Teste!
+  statusPorTransporte(statusPorTransporteCommand: InputTransporteModel!): OutputTransporteModel!
+}
+
+input InputProdutividadeModelGraph {
+  centerId: String!
+  data: String!
+  processo: String!
+  segmento: String!
+  status: String
+  empresa: String
+  paginacao: PaginacaoGraph
+}
+
+input PaginacaoGraph {
+  page: String
+  limit: String
+}
+
+input InputOverViewModelGraph {
+  centerId: String!
+  data: String!
+  processo: String!
+  segmento: String!
+}
+
+input AuthorizationModelInput {
+  userId: String!
+  centerId: String!
+}
+
+input InputTransporteModel {
+  centerId: String!
+  data: String!
+}
+
+type Mutation {
+  createTeste(createTesteInput: CreateTesteInput!): Teste!
+  updateTeste(updateTesteInput: UpdateTesteInput!): Teste!
+  removeTeste(id: Int!): Teste!
+}
+
+input CreateTesteInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateTesteInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}

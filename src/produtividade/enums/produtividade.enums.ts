@@ -1,0 +1,31 @@
+export enum Turno {
+  MANHA = 'MANHA',
+  TARDE = 'TARDE',
+  NOITE = 'NOITE',
+}
+
+export enum Processo {
+  SEPARACAO = 'SEPARACAO',
+  CARREGAMENTO = 'CARREGAMENTO',
+  CONFERENCIA = 'CONFERENCIA',
+}
+
+export enum StatusPalete {
+  NAO_INICIADO = 'NAO_INICIADO',
+  EM_PROGRESSO = 'EM_PROGRESSO',
+  CONCLUIDO = 'CONCLUIDO',
+  EM_PAUSA = 'EM_PAUSA',
+}
+
+export enum TipoProcesso {
+  SEPARACAO = 'SEPARACAO',
+  CARREGAMENTO = 'CARREGAMENTO',
+  CONFERENCIA = 'CONFERENCIA',
+}
+
+export enum StatusDemanda {
+  EM_PROGRESSO = 'EM_PROGRESSO',
+  FINALIZADA = 'FINALIZADA',
+  PAUSA = 'PAUSA',
+  CANCELADA = 'CANCELADA',
+}
