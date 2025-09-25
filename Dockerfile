@@ -37,4 +37,4 @@ COPY --from=builder /app/dist ./dist
 RUN npx prisma generate
 
 EXPOSE 4000
-CMD ["npm", "run", "start:prod"]
+CMD ["sh"]
