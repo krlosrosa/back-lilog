@@ -13,6 +13,10 @@ COPY . .
 #RUN npx prisma generate
 RUN npm run build
 
+# ⬇️ É NECESSÁRIO DECLARAR DE NOVO NO NOVO ESTÁGIO ⬇️
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
 
 # Estágio de produção
 FROM node:22 AS production
