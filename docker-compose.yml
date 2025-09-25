@@ -56,6 +56,6 @@ services:
       - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
 
 networks:
-  traefik_proxy:
+  proxy:
     external: true
     # Simplifiquei a declaração da rede. O nome usado no serviço é o mesmo da rede externa.
