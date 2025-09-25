@@ -1,6 +1,11 @@
 # Estágio de build
 FROM node:22 AS builder
 
+# ⬇️ RECEBE O ARGUMENTO DO DOCKER-COMPOSE ⬇️
+ARG DATABASE_URL
+# Torna a variável disponível para os comandos RUN
+ENV DATABASE_URL=$DATABASE_URL
+
 WORKDIR /app
 
 COPY package*.json ./
