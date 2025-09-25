@@ -4,23 +4,24 @@ services:
   back-produtividade:
     build:
       context: .
-      args: # <--- A MUDANÇA PRINCIPAL ESTÁ AQUI
+      args:
         - DATABASE_URL=${DATABASE_URL}
     container_name: back-produtividade
-    environment: # <--- MANTENHA ESTA SEÇÃO! Ela é necessária para o runtime.
-      - NODE_ENV=${NODE_ENV}
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
       - DATABASE_URL=${DATABASE_URL}
-      - PORT=${PORT}
-
+      - PORT=${PORT:-4000}
+    ports:
+      - "${PORT:-4000}:4000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.produtividade.rule=Host(`${PRODUTIVIDADE_HOST}`)"
       - "traefik.http.routers.produtividade.entrypoints=websecure"
       - "traefik.http.routers.produtividade.tls.certresolver=leresolver"
-      - "traefik.http.services.produtividade.loadbalancer.server.port=${PORT}"
-
+      - "traefik.http.services.produtividade.loadbalancer.server.port=4000"
     networks:
       - traefik_proxy
+    restart: unless-stopped
 
 networks:
   traefik_proxy:
