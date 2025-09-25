@@ -9,6 +9,7 @@ ENV DATABASE_URL=$DATABASE_URL
 WORKDIR /app
 
 COPY package*.json ./
+COPY package-lock.json ./
 COPY prisma ./prisma/
 
 RUN npm install --legacy-peer-deps
