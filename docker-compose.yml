@@ -7,23 +7,55 @@ services:
       args:
         - DATABASE_URL=${DATABASE_URL}
     container_name: back-produtividade
+    restart: unless-stopped
     environment:
       - NODE_ENV=${NODE_ENV:-production}
       - DATABASE_URL=${DATABASE_URL}
       - PORT=${PORT:-4000}
-    ports:
-      - "${PORT:-4000}:4000"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.produtividade.rule=Host(`${PRODUTIVIDADE_HOST}`)"
-      - "traefik.http.routers.produtividade.entrypoints=websecure"
-      - "traefik.http.routers.produtividade.tls.certresolver=leresolver"
-      - "traefik.http.services.produtividade.loadbalancer.server.port=4000"
+    # A seção 'ports' foi removida. Traefik gerencia o acesso externo.
     networks:
       - traefik_proxy
-    restart: unless-stopped
+    labels:
+      # --- Habilita o Traefik para este serviço ---
+      - "traefik.enable=true"
+      
+      # --- Roteador para HTTP (Porta 80) ---
+      # Define a regra de Host para tráfego HTTP
+      - "traefik.http.routers.produtividade-http.rule=Host(`${PRODUTIVIDADE_HOST}`)"
+      # Define o ponto de entrada como 'web' (porta 80)
+      - "traefik.http.routers.produtividade-http.entrypoints=web"
+      # Aplica o middleware para redirecionar para HTTPS
+      - "traefik.http.routers.produtividade-http.middlewares=redirect-to-https"
+
+      # --- Roteador para HTTPS (Porta 443) ---
+      # Define a regra de Host para tráfego seguro
+      - "traefik.http.routers.produtividade-https.rule=Host(`${PRODUTIVIDADE_HOST}`)"
+      # Define o ponto de entrada como 'websecure' (porta 443)
+      - "traefik.http.routers.produtividade-https.entrypoints=websecure"
+      # Habilita TLS/SSL
+      - "traefik.http.routers.produtividade-https.tls=true"
+      # Especifica o resolvedor de certificados (ex: Let's Encrypt)
+      - "traefik.http.routers.produtividade-https.tls.certresolver=leresolver" # Verifique se 'leresolver' é o nome correto do seu resolver no Traefik
+      # Aplica o middleware de cabeçalhos de segurança
+      - "traefik.http.routers.produtividade-https.middlewares=security-headers"
+      
+      # --- Definição do Serviço ---
+      # Aponta o tráfego para a porta interna do contêiner
+      - "traefik.http.services.produtividade.loadbalancer.server.port=4000"
+      
+      # --- Middlewares (Funcionalidades Extras) ---
+      # Middleware para forçar o redirecionamento para HTTPS
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      # Middleware com cabeçalhos de segurança recomendados
+      - "traefik.http.middlewares.security-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.security-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.security-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
 
 networks:
   traefik_proxy:
-    external:
-      name: root_default
+    external: true
+    # Simplifiquei a declaração da rede. O nome usado no serviço é o mesmo da rede externa.
