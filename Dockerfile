@@ -1,5 +1,5 @@
 # Estágio de build
-FROM node:22 AS builder
+FROM node:22-slim AS builder
 
 # ⬇️ RECEBE O ARGUMENTO DO DOCKER-COMPOSE ⬇️
 ARG DATABASE_URL
@@ -21,7 +21,7 @@ RUN npm run build
 
 
 # Estágio de produção
-FROM node:22 AS production
+FROM node:22-slim AS production
 
 # ⬇️ É NECESSÁRIO DECLARAR DE NOVO NO NOVO ESTÁGIO ⬇️
 ARG DATABASE_URL
