@@ -27,7 +27,6 @@ FROM node:22 AS production
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
 
-WORKDIR /app
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
