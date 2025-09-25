@@ -2,9 +2,12 @@ version: '3.8'
 
 services:
   back-produtividade:
-    build: .
+    build:
+      context: .
+      args: # <--- A MUDANÇA PRINCIPAL ESTÁ AQUI
+        - DATABASE_URL=${DATABASE_URL}
     container_name: back-produtividade
-    environment:
+    environment: # <--- MANTENHA ESTA SEÇÃO! Ela é necessária para o runtime.
       - NODE_ENV=${NODE_ENV}
       - DATABASE_URL=${DATABASE_URL}
       - PORT=${PORT}
