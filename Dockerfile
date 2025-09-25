@@ -9,7 +9,7 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Instalar dependências
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copiar código fonte
 COPY . .
