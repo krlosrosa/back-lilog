@@ -17,8 +17,6 @@ RUN npm run build
 # Estágio de produção
 FROM node:22-slim AS production
 
-WORKDIR /app
-
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
