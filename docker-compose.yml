@@ -14,7 +14,7 @@ services:
       - PORT=${PORT:-4000}
     # A seção 'ports' foi removida. Traefik gerencia o acesso externo.
     networks:
-      - traefik_proxy
+      - proxy
     labels:
       # --- Habilita o Traefik para este serviço ---
       - "traefik.enable=true"
