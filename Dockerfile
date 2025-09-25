@@ -1,5 +1,5 @@
 # Estágio de build
-FROM node:22-slim AS builder
+FROM node:22 AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN npm run build
 
 
 # Estágio de produção
-FROM node:22-slim AS production
+FROM node:22 AS production
 
 WORKDIR /app
 
