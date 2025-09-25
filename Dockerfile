@@ -43,4 +43,4 @@ COPY --from=builder /app/dist ./dist
 EXPOSE 4000
 
 # Se o seu start:prod usa o "dist/main.js", o CMD pode ser mais direto
-CMD ["sh", "-c", "npx prisma generate && npm run start:prod"]
+CMD ["sh"]
