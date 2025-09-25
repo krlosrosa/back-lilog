@@ -4,6 +4,7 @@ FROM node:22-slim AS builder
 # ⬇️ RECEBE O ARGUMENTO DO DOCKER-COMPOSE ⬇️
 ARG DATABASE_URL
 # Torna a variável disponível para os comandos RUN
+ENV NODE_ENV=development
 ENV DATABASE_URL=$DATABASE_URL
 
 WORKDIR /app
