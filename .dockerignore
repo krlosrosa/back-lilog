@@ -12,8 +12,6 @@ README.md
 coverage
 .nyc_output
 .coverage
-dist
-build
 .vscode
 .idea
 *.log

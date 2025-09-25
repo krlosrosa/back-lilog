@@ -2,19 +2,22 @@
 FROM node:22-slim AS builder
 
 ARG DATABASE_URL
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 ENV DATABASE_URL=$DATABASE_URL
 
 WORKDIR /app
 
+# Copiar arquivos de dependências primeiro para melhor cache
 COPY package*.json ./
 COPY prisma ./prisma/
 
-RUN npm install --legacy-peer-deps
+# Instalar dependências
+RUN npm ci --only=production --legacy-peer-deps
 
+# Copiar código fonte
 COPY . .
 
-# Prisma Client precisa existir antes do build
+# Gerar Prisma Client e fazer build
 RUN npx prisma generate
 RUN npm run build
 
@@ -27,14 +30,16 @@ ENV DATABASE_URL=$DATABASE_URL
 
 WORKDIR /app
 
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
+# Instalar dependências de produção
+COPY package*.json ./
+RUN npm ci --only=production --legacy-peer-deps
+
+# Copiar arquivos necessários
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/.env .env
 COPY --from=builder /app/dist ./dist
 
-# Prisma Client no container final
+# Gerar Prisma Client
 RUN npx prisma generate
 
 EXPOSE 4000
-CMD ["sh"]
+CMD ["node", "dist/main.js"]
