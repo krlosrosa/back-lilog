@@ -13,6 +13,9 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - PUBLIC_KEY=${PUBLIC_KEY}
       - PORT=${PORT:-4000}
+      - KEYCLOAK_URL=${KEYCLOAK_URL}
+      - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
+      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
     # A seção 'ports' foi removida. Traefik gerencia o acesso externo.
     networks:
       - proxy

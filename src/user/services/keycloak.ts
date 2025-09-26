@@ -15,14 +15,14 @@ export class KeycloakService implements IIdentityUserRepository {
         '@keycloak/keycloak-admin-client'
       );
       this.kcAdminClient = new KcAdminClient({
-        baseUrl: 'https://keycloak.ragde.app',
+        baseUrl: process.env.KEYCLOAK_URL,
         realmName: 'lilo',
       });
     }
     await this.kcAdminClient.auth({
       grantType: 'client_credentials',
       clientId: 'backend', // O Client ID que você criou
-      clientSecret: 'Crg3Q9bhJktodyQZoE2bdk8q39UlgAei', // O Client Secret que você copiou
+      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET, // O Client Secret que você copiou
     });
     return this.kcAdminClient;
   }
