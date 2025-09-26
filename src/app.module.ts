@@ -38,7 +38,7 @@ import { RulesModule } from './rules/rules.module';
     }),
     JwtModule.register({
       global: true,
-      publicKey: join(process.cwd(), 'src/auth/keys/public.pem'),
+      publicKey: `-----BEGIN PUBLIC KEY-----\n${process.env.PUBLIC_KEY}\n-----END PUBLIC KEY-----`, //join(process.cwd(), 'src/auth/keys/public.pem'),
     }),
     EventEmitterModule.forRoot(),
     ConfigModule.forRoot(),
