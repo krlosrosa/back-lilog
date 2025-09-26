@@ -16,7 +16,7 @@ export class KeycloakService implements IIdentityUserRepository {
       );
       this.kcAdminClient = new KcAdminClient({
         baseUrl: process.env.KEYCLOAK_URL,
-        realmName: 'lilo',
+        realmName: 'lilog',
       });
     }
     await this.kcAdminClient.auth({
