@@ -16,7 +16,8 @@ services:
       - REALM_NAME=${REALM_NAME}
       - KEYCLOAK_URL=${KEYCLOAK_URL}
       - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
-      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
+      - CLIENT_SECRET_KEYCLOAK=${CLIENT_SECRET_KEYCLOAK}
+
     # A seção 'ports' foi removida. Traefik gerencia o acesso externo.
     networks:
       - proxy
