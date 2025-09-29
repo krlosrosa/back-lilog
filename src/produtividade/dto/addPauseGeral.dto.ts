@@ -3,12 +3,6 @@ import { Processo, Turno } from '../enums/produtividade.enums';
 
 export class AddPauseGeralDto {
   @ApiProperty({
-    description: 'ID do usuário que está cadastrando a pausa geral',
-    example: '123',
-  })
-  cadastradoPorId: string;
-
-  @ApiProperty({
     description: 'ID do centro que está sendo pausado',
     example: '123',
   })

@@ -71,10 +71,7 @@ export class ProdutividadeService {
   }
 
   addPausaGeral(command: AddPauseGeralDto, cadastradoPorId: string) {
-    return this.addPausaGeralUsecase.execute({
-      ...command,
-      cadastradoPorId,
-    });
+    return this.addPausaGeralUsecase.execute(command, cadastradoPorId);
   }
 
   finalizarPausaGeral(command: FinalizarPauseGeralDto) {

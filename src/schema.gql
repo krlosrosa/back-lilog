@@ -117,6 +117,7 @@ input InputProdutividadeModelGraph {
   data: String!
   processo: String!
   segmento: String!
+  pesquisa: String
   status: String
   empresa: String
   paginacao: PaginacaoGraph

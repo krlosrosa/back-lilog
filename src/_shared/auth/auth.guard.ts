@@ -18,13 +18,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    const key = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAph7qkCycnrtb0NBRSfrzimIbv9WEJBtYbTqQE7nNraeflLx0SL612bd5C+jyuVmk/GhFsVXbfuklimBSa3/ZmT7/WkOnb4gMgbPy+Ra8w6Vbs+uHpiSSXFBHMUMEjwFpYle6Dw02WzMrovjFhNw18IldqffLwm4ceuYh6HTFMlVNykHo9hioa9Wn2eeHyisfldJoJEqbEOxwb0gMRoT2938gbuif2iO99Lkj31HlbYcns5zqtAofCY6thYHM65FzyYpscphpnDFTpDk1xjEjCBZnA2z9MQ7DtMlsJdy8oHdjHtAmnEzpCoVFlbhZsrQXMFK6dv2YWK8LKbB9mC3vFwIDAQAB
------END PUBLIC KEY-----`;
-
-{/*const key2 = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv/kh4ee8EQTWTLUuCIdyGQn0ypQkZd/cGSCvBxz718nVDx4KsJBKidJdlET6seO1Jfku+eASgGeYKBZl9ZwIByCPIoWDLxqPJshWpnb5Fm/u9kC7qE78+Ym3RjJMJ4WG72Q9WukG0FMvibKQgdrIZBog7oCaKofNBOLvULOrxaLXZEk6bjlSOeSu9crYJnkJYXZOcKETS13cKRfuDTg15NdSWxRHTndRtUCh02gTcejCM4LG9VJxUtGh7wn3ukdyUhbQusBzJNHRk6aUS1F2lrKON6gsBP6LZIkGDRNQDu/5qd2yySG3X7117s3df0biQxKQ2sGz0eQ3dnCdtu7xjQIDAQAB
------END PUBLIC KEY-----`*/}
+    const key = `-----BEGIN PUBLIC KEY-----\n${process.env.PUBLIC_KEY}\n-----END PUBLIC KEY-----`;
 
     try {
       const payload: KeycloakTokenPayload = await this.jwtService.verifyAsync(

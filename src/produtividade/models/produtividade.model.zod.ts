@@ -107,6 +107,9 @@ export class InputProdutividadeModelGraph {
   @Field()
   segmento: string;
 
+  @Field({ nullable: true })
+  pesquisa?: string;
+
   @Field({ nullable: true }) // status opcional
   status?: string;
 

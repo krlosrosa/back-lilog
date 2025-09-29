@@ -65,7 +65,10 @@ export class PausaPrismaRepository implements IPausaRepository {
       : null;
   }
 
-  async adicionarPausaGeral(params: AddPauseGeralDto): Promise<void> {
+  async adicionarPausaGeral(
+    params: AddPauseGeralDto,
+    cadastradoPorId: string,
+  ): Promise<void> {
     await this.prisma.$transaction(async (tx) => {
       const demandas = await tx.demanda.findMany({
         where: {
@@ -81,24 +84,20 @@ export class PausaPrismaRepository implements IPausaRepository {
         },
       });
 
-      if (demandas.length === 0) {
-        return null;
-      }
-
       await tx.pausaGeral.create({
         data: {
           inicio: new Date(),
           processo: params.processo,
           turno: params.turno,
           centerId: params.centerId,
-          registradoPorId: params.cadastradoPorId,
+          registradoPorId: cadastradoPorId,
           pausas: {
             create: demandas.map((demanda) => ({
               demandaId: demanda.id,
               inicio: new Date(),
               fim: null,
               motivo: params.motivo,
-              registradoPorId: params.cadastradoPorId,
+              registradoPorId: cadastradoPorId,
             })),
           },
         },

@@ -37,7 +37,10 @@ export class ProdutividadeController {
     private readonly produtividadeService: ProdutividadeService,
   ) {}
 
-  @ApiOperation({ summary: 'Inicia um picking' })
+  @ApiOperation({
+    summary: 'Iniciar demanda de produtividade',
+    operationId: 'iniciarDemandaProdutividade',
+  })
   @ApiResponse({ status: 200, description: 'Picking iniciado com sucesso' })
   @ApiCommonErrors()
   @Post('iniciar-demanda/:centerId')

@@ -14,6 +14,7 @@ import {
   OverViewProdutividadeZodDto,
 } from 'src/produtividade/dto/overViewProdutividade.dto';
 import { getStartAndEndOfDay } from 'src/_shared/utils/getStartAndEndOfDay';
+import { TipoProcesso } from '@prisma/client';
 
 @Injectable()
 export class ProdutividadePrismaRepository implements IProdutividadeRepository {
@@ -56,7 +57,7 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
 
     const where: any = {
       centerId,
-      processo,
+      processo: processo.toUpperCase(),
       paletes: {
         some: {
           transporte: {
@@ -66,7 +67,9 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
             },
           },
           // filtros opcionais aplicados dinamicamente
-          ...(command.empresa ? { empresa: command.empresa } : {}),
+          ...(command.empresa
+            ? { empresa: command.empresa.toUpperCase() }
+            : {}),
           ...(command.segmento ? { segmento: command.segmento } : {}),
         },
       },
@@ -74,8 +77,39 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
       ...(command.status ? { status: command.status } : {}),
     };
 
+    if (command.pesquisa) {
+      where.OR = [
+        // Nome do funcionário
+        {
+          funcionario: {
+            name: { contains: command.pesquisa, mode: 'insensitive' },
+          },
+        },
+        // Número do transporte
+        {
+          paletes: {
+            some: {
+              transporte: {
+                numeroTransporte: {
+                  contains: command.pesquisa,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        },
+        // ID da demanda (se for número válido)
+        ...(isNaN(Number(command.pesquisa))
+          ? []
+          : [{ id: Number(command.pesquisa) }]),
+      ];
+    }
+
+    console.log(where);
     const demandas = await this.prisma.demanda.findMany({
-      where,
+      where: {
+        ...where,
+      },
       include: {
         paletes: {
           include: {
@@ -155,6 +189,7 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
   async overViewProdutividade(
     command: OverViewProdutividadeZodDto,
   ): Promise<OverViewProdutividadeResponseZodDto> {
+    console.log(command);
     const { startOfDay, endOfDay } = getStartAndEndOfDay(
       new Date(command.data),
     );
@@ -162,7 +197,7 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
       const totalProcessos = await tx.demanda.count({
         where: {
           centerId: command.centerId,
-          processo: command.processo,
+          processo: command.processo.toUpperCase() as TipoProcesso,
           paletes: {
             some: {
               transporte: {
@@ -178,7 +213,7 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
       const totalProcessosEmAndamento = await tx.demanda.count({
         where: {
           centerId: command.centerId,
-          processo: command.processo,
+          processo: command.processo.toUpperCase() as TipoProcesso,
           status: StatusDemanda.EM_PROGRESSO,
           paletes: {
             some: {
@@ -197,7 +232,7 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
         where: {
           demanda: {
             centerId: command.centerId,
-            processo: command.processo,
+            processo: command.processo.toUpperCase() as TipoProcesso,
             paletes: {
               some: {
                 transporte: {
@@ -222,7 +257,7 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
         {
           where: {
             centerId: command.centerId,
-            processo: command.processo,
+            processo: command.processo.toUpperCase() as TipoProcesso,
             dataRegistro: {
               gte: startOfDay,
               lte: endOfDay,

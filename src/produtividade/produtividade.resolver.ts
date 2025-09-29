@@ -31,7 +31,7 @@ export class ProdutividadeResolver {
     const produtividade = await this.produtividadeService.buscarProdutividade({
       ...buscarProdutividadeCommand,
     });
-    return produtividade.map((produtividade) => {
+    const produtividadeResponse = produtividade.map((produtividade) => {
       return {
         centerId: produtividade.centerId,
         processo: produtividade.processo,
@@ -56,6 +56,8 @@ export class ProdutividadeResolver {
         tempoTrabalhado: produtividade.calcularTempoTrabalhado(),
       };
     });
+    console.log(produtividadeResponse);
+    return produtividadeResponse;
   }
 
   @Query(() => OverViewModel)
@@ -65,9 +67,12 @@ export class ProdutividadeResolver {
     @Args('overViewProdutividadeCommand')
     overViewProdutividadeCommand: InputOverViewModelGraph,
   ): Promise<OverViewProdutividadeResponseZodDto> {
-    return this.produtividadeService.overViewProdutividade(
-      overViewProdutividadeCommand,
-    );
+    const overViewProdutividade =
+      await this.produtividadeService.overViewProdutividade(
+        overViewProdutividadeCommand,
+      );
+    console.log(overViewProdutividade);
+    return overViewProdutividade;
   }
 
   @Query(() => InfoDemandaModel)

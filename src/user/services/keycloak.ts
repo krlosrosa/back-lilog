@@ -16,13 +16,13 @@ export class KeycloakService implements IIdentityUserRepository {
       );
       this.kcAdminClient = new KcAdminClient({
         baseUrl: process.env.KEYCLOAK_URL,
-        realmName: 'lilog',
+        realmName: 'lilo',
       });
     }
     await this.kcAdminClient.auth({
       grantType: 'client_credentials',
       clientId: 'backend', // O Client ID que você criou
-      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET, // O Client Secret que você copiou
+      clientSecret: process.env.CLIENT_SECRET_KEYCLOAK, // O Client Secret que você copiou
     });
     return this.kcAdminClient;
   }
@@ -52,7 +52,6 @@ export class KeycloakService implements IIdentityUserRepository {
 
   async deleteUser(userId: string, accessToken: string): Promise<void> {
     const kcAdminClient = await this.getClient();
-    kcAdminClient.setAccessToken(accessToken);
     await kcAdminClient.users.delete({
       id: userId,
     });

@@ -9,6 +9,7 @@ export const BuscarProdutividadeSchema = z.object({
   segmento: z.string(),
   status: z.string().optional(),
   empresa: z.string().optional(),
+  pesquisa: z.string().optional(),
   paginacao: z
     .object({
       page: z.string().optional(),

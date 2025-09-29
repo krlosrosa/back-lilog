@@ -16,6 +16,9 @@ export interface IPausaRepository {
     processo: Processo;
     segmento: string;
   }): Promise<PausaGeralEntity | null>;
-  adicionarPausaGeral(params: AddPauseGeralDto): Promise<void>;
+  adicionarPausaGeral(
+    params: AddPauseGeralDto,
+    cadastradoPorId: string,
+  ): Promise<void>;
   finalizarPausaGeral(pausaGeralId: number): Promise<void>;
 }

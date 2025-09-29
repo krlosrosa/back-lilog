@@ -3,7 +3,6 @@ import { Processo, Turno } from '../../enums/produtividade.enums';
 import { type IPausaRepository } from 'src/produtividade/domain/repositories/iPausaRepository';
 
 export interface AddPausaGeral {
-  cadastradoPorId: string;
   centerId: string;
   turno: Turno;
   processo: Processo;
@@ -18,7 +17,7 @@ export class AddPausaGeralUsecase {
     private readonly pausaRepository: IPausaRepository,
   ) {}
 
-  async execute(command: AddPausaGeral) {
+  async execute(command: AddPausaGeral, cadastradoPorId: string) {
     // Verificar se tem pausa geral ativa
     const pausaGeral =
       await this.pausaRepository.buscarPausaGeralAtiva(command);
@@ -28,6 +27,6 @@ export class AddPausaGeralUsecase {
     }
 
     // se não tiver, adicionar a pausa geral
-    return this.pausaRepository.adicionarPausaGeral(command);
+    return this.pausaRepository.adicionarPausaGeral(command, cadastradoPorId);
   }
 }
