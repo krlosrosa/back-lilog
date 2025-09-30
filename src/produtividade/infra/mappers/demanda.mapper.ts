@@ -3,6 +3,7 @@ import {
   Pausa as PausaPrisma,
   Palete as PaletePrisma,
   User as UserPrisma,
+  Center as CenterPrisma,
 } from '@prisma/client';
 import { DemandaEntity } from 'src/produtividade/domain/entities/demanda.entity';
 import {
@@ -12,9 +13,11 @@ import {
 } from 'src/produtividade/enums/produtividade.enums';
 import { PausaMapper } from './pausa.mapper';
 import { PaleteMapper } from './palete.mapper';
+import { CenterEntity } from 'src/centro/domain/center.entity';
 
 type PrismaDemandaWithPausas = DemandaPrisma & {
   pausas: PausaPrisma[];
+  center: CenterPrisma;
   paletes: PaletePrisma[];
   funcionario: UserPrisma;
   dataRegistro: string;
@@ -41,6 +44,7 @@ export class DemandaMapper {
       funcionario: demanda.funcionario.name,
       criadoEm: demanda.criadoEm,
       dataRegistro: demanda.dataRegistro,
+      center: CenterEntity.create(demanda.center),
     });
   }
 }

@@ -6,13 +6,17 @@ import { AtualizarDashBoardUserUsecase } from './application/atualizarDashBoardU
 import { DashUserPrismaRepository } from './infra/prisma/dashUser.infra';
 import { DashboardResolver } from './dashboard.resolver';
 import { StatusPorTransporteUsecase } from './application/statusPorTransporte.usecase';
+import { DashCentrosUsecase } from './application/dashCentros.usecase';
+import { DashboardController } from './dashboard.controller';
 
 @Module({
+  controllers: [DashboardController],
   providers: [
     DashboardListener,
     AtualizarDashBoardCentroUsecase,
     AtualizarDashBoardUserUsecase,
     StatusPorTransporteUsecase,
+    DashCentrosUsecase,
     {
       provide: 'IDashboardRepository',
       useClass: DashCenterPrismaRepository,

@@ -5,6 +5,7 @@ import {
   Turno,
 } from 'src/produtividade/enums/produtividade.enums';
 import { PausaEntity } from './pausa.entity';
+import { CenterEntity } from 'src/centro/domain/center.entity';
 
 export class DemandaEntity {
   private readonly _id: number;
@@ -21,6 +22,7 @@ export class DemandaEntity {
   private _obs?: string | null;
   private readonly _paletes?: PaleteEntity[];
   private readonly _pausas?: PausaEntity[];
+  private readonly _center?: CenterEntity;
   private readonly _criadoEm: Date;
   constructor(params: DemandaEntityType) {
     this._id = params.id;
@@ -38,6 +40,7 @@ export class DemandaEntity {
     this._paletes = params.paletes;
     this._pausas = params.pausas;
     this._status = params.status;
+    this._center = params.center;
   }
 
   static create(params: DemandaEntityType): DemandaEntity {
@@ -147,6 +150,10 @@ export class DemandaEntity {
     return this._id;
   }
 
+  get cluster(): string {
+    return this._center?.cluster ?? '';
+  }
+
   get paletes(): PaleteEntity[] | undefined {
     return this._paletes;
   }
@@ -228,4 +235,5 @@ type DemandaEntityType = {
   obs?: string | null;
   pausas?: PausaEntity[];
   criadoEm: Date;
+  center?: CenterEntity;
 };

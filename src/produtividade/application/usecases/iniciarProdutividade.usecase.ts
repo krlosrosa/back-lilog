@@ -39,7 +39,7 @@ export class IniciarProdutividadeUsecase {
   ) {}
   async execute(command: InitiatePickingCommand): Promise<string> {
     const funcionario = await this.userRepository.buscarPorId(
-      command.cadastradoPorId,
+      command.funcionarioId,
       command.centerId,
     );
     const paletes = await this.paleteRepository.findByIds(command.paletesIds);

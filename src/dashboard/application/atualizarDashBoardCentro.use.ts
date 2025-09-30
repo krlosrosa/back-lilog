@@ -17,6 +17,7 @@ export class AtualizarDashBoardCentroUsecase {
         processo: demanda.processo,
         turno: demanda.turno,
         dataRegistro: demanda.dataRegistro,
+        cluster: demanda.cluster,
       });
     if (!dashboard) {
       const dashCenter = DashCenterEntity.create({
@@ -32,6 +33,7 @@ export class AtualizarDashBoardCentroUsecase {
         totalDemandas: demanda.quantidadeDemandas(),
         processo: demanda.processo,
         turno: demanda.turno,
+        cluster: demanda.cluster,
       });
       return this.dashboardRepository.atualizarDashBoardCentro(dashCenter);
     }
@@ -51,6 +53,7 @@ export class AtualizarDashBoardCentroUsecase {
       totalTempoTrabalhado:
         dashboard.totalTempoTrabalhado + demanda.calcularTempoTrabalhado(),
       totalDemandas: dashboard.totalDemandas + demanda.quantidadeDemandas(),
+      cluster: dashboard.cluster,
     });
     return this.dashboardRepository.atualizarDashBoardCentro(newDashboard);
   }

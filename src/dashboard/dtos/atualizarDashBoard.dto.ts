@@ -6,6 +6,7 @@ export const AtualizarDashBoardCentroSchema = z.object({
   processo: z.string(),
   turno: z.string(),
   dataRegistro: z.string(),
+  cluster: z.string(),
 });
 
 export class AtualizarDashBoardCentroZodDto extends createZodDto(

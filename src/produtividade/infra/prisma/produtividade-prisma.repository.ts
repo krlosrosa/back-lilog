@@ -118,6 +118,7 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
         },
         pausas: true,
         funcionario: true,
+        center: true,
       },
     });
 
@@ -147,6 +148,7 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
             transporte: true,
           },
         },
+        center: true,
         pausas: true,
         funcionario: true,
       },
@@ -301,6 +303,7 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
         },
         pausas: true,
         funcionario: true,
+        center: true,
       },
     });
     return demanda

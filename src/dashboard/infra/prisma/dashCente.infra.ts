@@ -11,6 +11,7 @@ import {
 } from 'src/produtividade/enums/produtividade.enums';
 import { StatusTransporte } from 'src/transporte/enums/transport.enum';
 import { StatusPorTransporteZodDto } from 'src/dashboard/dtos/statusPorTransporte.dto';
+import { DashCentrosZodDto } from 'src/dashboard/dtos/dashCentros.dto';
 
 @Injectable()
 export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
@@ -77,6 +78,7 @@ export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
           id: dashboard.id,
           dataRegistro: dashboard.dataRegistro.toISOString(),
           centerId: dashboard.centerId,
+          cluster: dashboard.cluster,
           totalCaixas: dashboard.totalCaixas,
           totalUnidades: dashboard.totalUnidades,
           totalPaletes: dashboard.totalPaletes,
@@ -135,5 +137,172 @@ export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
           (status) => status.status === StatusTransporte.FATURADO,
         )?._count._all || 0,
     };
+  }
+
+  async dashCentros(
+    dataInicio: string,
+    dataFim: string,
+  ): Promise<DashCentrosZodDto> {
+    const { startOfDay: startOfDayInicio } = getStartAndEndOfDay(
+      new Date(dataInicio),
+    );
+    const { endOfDay: endOfDayFim } = getStartAndEndOfDay(new Date(dataFim));
+
+    const [
+      result,
+      topCincoProdutividadeDiaDia,
+      produtividadePorCentro,
+      produtividadePorCluster,
+    ] = await this.prisma.$transaction(async (tx) => {
+      const result = await tx.dashboardProdutividadeCenter.aggregate({
+        where: {
+          dataRegistro: { gte: startOfDayInicio, lte: endOfDayFim },
+        },
+        _sum: {
+          totalCaixas: true,
+          totalEnderecos: true,
+          totalTempoTrabalhado: true,
+          totalDemandas: true,
+        },
+      });
+      const topCincoProdutividadeDiaDia =
+        await tx.dashboardProdutividadeCenter.findMany({
+          where: {
+            dataRegistro: { gte: startOfDayInicio, lte: endOfDayFim },
+          },
+          include: {
+            center: true,
+          },
+        });
+
+      const produtividadePorCentro =
+        await tx.dashboardProdutividadeCenter.groupBy({
+          by: ['centerId'],
+          where: {
+            dataRegistro: { gte: startOfDayInicio, lte: endOfDayFim },
+          },
+          _sum: {
+            totalCaixas: true,
+            totalTempoTrabalhado: true,
+            totalDemandas: true,
+          },
+        });
+
+      const produtividadePorCluster =
+        await tx.dashboardProdutividadeCenter.groupBy({
+          by: ['cluster'],
+          where: {
+            dataRegistro: { gte: startOfDayInicio, lte: endOfDayFim },
+          },
+          _sum: {
+            totalCaixas: true,
+            totalTempoTrabalhado: true,
+            totalDemandas: true,
+          },
+        });
+
+      return [
+        result,
+        topCincoProdutividadeDiaDia,
+        produtividadePorCentro,
+        produtividadePorCluster,
+      ];
+    });
+
+    // Calcular Top 5 Produtividade Dia Dia (por centro)
+    const acumuladoPorCentro = topCincoProdutividadeDiaDia.reduce(
+      (acc, item) => {
+        const existente = acc[item.centerId] || {
+          centro: item.centerId,
+          cluster: item.center.cluster,
+          totalCaixas: 0,
+          totalTempoTrabalhado: 0,
+          produtividade: 0,
+        };
+
+        existente.totalCaixas += item.totalCaixas || 0;
+        existente.totalTempoTrabalhado += item.totalTempoTrabalhado || 0;
+
+        const horasCentro = existente.totalTempoTrabalhado / 3600000; // ms -> horas
+        existente.produtividade =
+          horasCentro > 0 ? existente.totalCaixas / horasCentro : 0;
+
+        acc[item.centerId] = existente;
+        return acc;
+      },
+      {} as Record<
+        string,
+        {
+          centro: string;
+          cluster: string;
+          totalCaixas: number;
+          totalTempoTrabalhado: number;
+          produtividade: number;
+        }
+      >,
+    );
+
+    const retornoItems = Object.values(acumuladoPorCentro)
+      .sort((a, b) => b.produtividade - a.produtividade)
+      .slice(0, 5);
+
+    const topCincoProdutividade = retornoItems.map((item) => ({
+      centro: item.centro,
+      cluster: item.cluster,
+      totalCaixas: item.totalCaixas,
+      horasTrabalhadas: (item.totalTempoTrabalhado || 0) / 3600000,
+      produtividade: item.produtividade,
+    }));
+
+    const horas = (result._sum.totalTempoTrabalhado || 0) / 3600000;
+    const produtividade = (result._sum.totalCaixas || 0) / (horas || 0) || 0;
+
+    const produtividadeDiaDiaItems = topCincoProdutividadeDiaDia.map((item) => {
+      const horasItem = (item.totalTempoTrabalhado || 0) / 3600000;
+      return {
+        dataRegistro: item.dataRegistro.toISOString(),
+        totalCaixas: item.totalCaixas || 0,
+        horasTrabalhadas: (item.totalTempoTrabalhado || 0) / 3600000,
+        produtividade: horasItem > 0 ? (item.totalCaixas || 0) / horasItem : 0,
+      };
+    });
+
+    const rankingProdutividadePorCentroItems = produtividadePorCentro.map(
+      (item) => {
+        const horasItem = (item._sum.totalTempoTrabalhado || 0) / 3600000;
+        return {
+          totalCaixas: item._sum.totalCaixas || 0,
+          horasTrabalhadas: (item._sum.totalTempoTrabalhado || 0) / 3600000,
+          cluster: '',
+          produtividade:
+            horasItem > 0 ? (item._sum.totalCaixas || 0) / horasItem : 0,
+          centro: item.centerId,
+        };
+      },
+    );
+
+    const rankingProdutividadePorClusterItems = produtividadePorCluster.map(
+      (item) => {
+        const horasItem = (item._sum.totalTempoTrabalhado || 0) / 3600000;
+        return {
+          totalCaixas: item._sum.totalCaixas || 0,
+          horasTrabalhadas: (item._sum.totalTempoTrabalhado || 0) / 3600000,
+          cluster: item.cluster,
+          produtividade:
+            horasItem > 0 ? (item._sum.totalCaixas || 0) / horasItem : 0,
+        };
+      },
+    );
+
+    return Promise.resolve({
+      totalCaixas: result._sum.totalCaixas || 0,
+      horasTrabalhadas: (result._sum.totalTempoTrabalhado || 0) / 3600000,
+      totalDemandas: result._sum.totalDemandas || 0,
+      produtividade: produtividade,
+      topCincoProdutividade: topCincoProdutividade,
+      produtividadeDiaDia: produtividadeDiaDiaItems,
+      rankingProdutividadePorCentro: rankingProdutividadePorCentroItems,
+      rankingProdutividadePorCluster: rankingProdutividadePorClusterItems,
+    });
   }
 }

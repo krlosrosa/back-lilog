@@ -7,6 +7,7 @@ export class DashCenterEntity {
   private readonly _id?: number | null;
   private readonly _dataRegistro: string;
   private readonly _centerId: string;
+  private readonly _cluster: string;
   private readonly _totalCaixas: number;
   private readonly _totalUnidades: number;
   private readonly _totalPaletes: number;
@@ -22,6 +23,7 @@ export class DashCenterEntity {
     this._id = params.id;
     this._dataRegistro = params.dataRegistro;
     this._centerId = params.centerId;
+    this._cluster = params.cluster;
     this._totalCaixas = params.totalCaixas;
     this._totalUnidades = params.totalUnidades;
     this._totalPaletes = params.totalPaletes;
@@ -48,6 +50,10 @@ export class DashCenterEntity {
 
   get centerId(): string {
     return this._centerId;
+  }
+
+  get cluster(): string {
+    return this._cluster;
   }
 
   get totalCaixas(): number {
@@ -95,6 +101,7 @@ type DashCenterEntityType = {
   id?: number | null;
   dataRegistro: string;
   centerId: string;
+  cluster: string;
   totalCaixas: number;
   totalUnidades: number;
   totalPaletes: number;
