@@ -97,6 +97,7 @@ export class PausaPrismaRepository implements IPausaRepository {
               inicio: new Date(),
               fim: null,
               motivo: params.motivo,
+              descricao: params.motivo,
               registradoPorId: cadastradoPorId,
             })),
           },
