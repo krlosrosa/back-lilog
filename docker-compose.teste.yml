@@ -1,12 +1,12 @@
 version: '3.8'
 
 services:
-  produtividade:
+  produtividadeteste:
     build:
       context: .
       args:
         - DATABASE_URL=${DATABASE_URL}
-    container_name: produtividade
+    container_name: produtividadeteste
     restart: unless-stopped
     environment:
       - NODE_ENV=${NODE_ENV:-production}
@@ -24,10 +24,10 @@ services:
     labels:
       # --- Habilita o Traefik para este serviço ---
       - "traefik.enable=true"
-      - "traefik.http.routers.produtividade.rule=Host(`${PRODUTIVIDADE_HOST}`)"
-      - "traefik.http.routers.produtividade.service=produtividade"
-      - "traefik.http.routers.produtividade.tls.certresolver=letsencrypt"
-      - "traefik.http.services.produtividade.loadbalancer.server.port=4000"
+      - "traefik.http.routers.produtividadeteste.rule=Host(`${PRODUTIVIDADE_HOST}`)"
+      - "traefik.http.routers.produtividadeteste.service=produtividadeteste"
+      - "traefik.http.routers.produtividadeteste.tls.certresolver=letsencrypt"
+      - "traefik.http.services.produtividadeteste.loadbalancer.server.port=4000"
 
 networks:
   proxy:
