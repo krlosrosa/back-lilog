@@ -210,6 +210,23 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
           },
         },
       });
+      const totalProcessosEmPausa = await tx.demanda.count({
+        where: {
+          centerId: command.centerId,
+          processo: command.processo.toUpperCase() as TipoProcesso,
+          status: StatusDemanda.PAUSA,
+          paletes: {
+            some: {
+              transporte: {
+                dataExpedicao: {
+                  gte: startOfDay,
+                  lte: endOfDay,
+                },
+              },
+            },
+          },
+        },
+      });
       const totalProcessosEmAndamento = await tx.demanda.count({
         where: {
           centerId: command.centerId,
@@ -279,7 +296,8 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
       return {
         processos: totalProcessos,
         emAndamento: totalProcessosEmAndamento,
-        concluidos: totalProcessos - totalProcessosEmAndamento,
+        concluidos:
+          totalProcessos - totalProcessosEmAndamento - totalProcessosEmPausa,
         totalCaixas: caixas._sum.quantidadeCaixas || 0,
         totalUnidades: caixas._sum.quantidadeUnidades || 0,
         produtividade:
