@@ -554,6 +554,12 @@ export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
       },
     });
 
-    return resultado;
+    return resultado.map((item) => {
+      return {
+        ...item,
+        fim: item.fim?.toISOString(),
+        inicio: item.inicio?.toISOString(),
+      };
+    });
   }
 }
