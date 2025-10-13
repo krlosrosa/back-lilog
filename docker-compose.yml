@@ -6,7 +6,7 @@ services:
       context: .
       args:
         - DATABASE_URL=${DATABASE_URL}
-    container_name: produtividade
+    container_name: ${CONTAINER_NAME}
     restart: unless-stopped
     environment:
       - NODE_ENV=${NODE_ENV:-production}
@@ -24,10 +24,10 @@ services:
     labels:
       # --- Habilita o Traefik para este serviço ---
       - "traefik.enable=true"
-      - "traefik.http.routers.produtividade.rule=Host(`${PRODUTIVIDADE_HOST}`)"
-      - "traefik.http.routers.produtividade.service=produtividade"
-      - "traefik.http.routers.produtividade.tls.certresolver=letsencrypt"
-      - "traefik.http.services.produtividade.loadbalancer.server.port=4000"
+      - "traefik.http.routers.${CONTAINER_NAME}.rule=Host(`${PRODUTIVIDADE_HOST}`)"
+      - "traefik.http.routers.${CONTAINER_NAME}.service=${CONTAINER_NAME}"
+      - "traefik.http.routers.${CONTAINER_NAME}.tls.certresolver=letsencrypt"
+      - "traefik.http.services.${CONTAINER_NAME}.loadbalancer.server.port=4000"
 
 networks:
   proxy:

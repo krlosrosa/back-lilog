@@ -34,11 +34,6 @@ export class CriarAnomaliaProdutividadeUsecase {
       });
     }
 
-    console.log({
-      tempoDemanda: tempoDemanda,
-      tempoMinimoPorVisitaEmMilisegundos: tempoMinimoPorVisitaEmMilisegundos,
-    });
-
     await this.anomaliaProdutividade.adicionarAnomalia(listaAnomalias);
   }
 }
