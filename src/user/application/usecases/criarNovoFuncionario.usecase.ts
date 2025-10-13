@@ -8,7 +8,27 @@ export class CriarNovoFuncionarioUsecase {
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
   ) {}
-  async execute(command: CriarNovoFuncionarioZodDto) {
+  async execute(
+    command: CriarNovoFuncionarioZodDto,
+  ): Promise<CriarNovoFuncionarioZodDto> {
+    const user = await this.userRepository.buscarPorId(
+      command.id,
+      command.centerId,
+    );
+    if (user) {
+      await this.userRepository.atribuirCentroAFuncionario({
+        centerId: command.centerId,
+        role: 'FUNCIONARIO',
+        userId: command.id,
+      });
+      return {
+        centerId: command.centerId,
+        id: command.id,
+        nome: command.nome,
+        role: 'FUNCIONARIO',
+        turno: command.turno,
+      };
+    }
     return this.userRepository.criarNovoFuncionario(command);
   }
 }

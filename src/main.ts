@@ -2,24 +2,16 @@ import './tracing';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
 import { ConsoleLogger } from '@nestjs/common';
 import { cleanupOpenApiDoc } from 'nestjs-zod';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-    {
-      logger: new ConsoleLogger({
-        colors: true,
-        json: true,
-      }),
-    },
-  );
+  const app = await NestFactory.create(AppModule, {
+    logger: new ConsoleLogger({
+      colors: true,
+      json: true,
+    }),
+  });
 
   app.enableCors({
     origin: '*', // permite todas as origens (pode substituir pelo domínio específico)

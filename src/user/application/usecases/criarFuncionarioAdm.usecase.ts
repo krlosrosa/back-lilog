@@ -16,9 +16,23 @@ export class CriarFuncionarioAdmUsecase {
     command: CriarFuncionarioAdmZodDto,
     accessToken: string,
   ): Promise<CriarNovoFuncionarioZodDto> {
+    const user = await this.userRepository.buscarFuncionarioPorId(command.id);
+    if (user) {
+      await this.userRepository.atribuirCentroAFuncionario({
+        centerId: command.centerId,
+        role: 'USER',
+        userId: command.id,
+      });
+      return {
+        centerId: command.centerId,
+        id: command.id,
+        nome: command.nome,
+        role: 'USER',
+        turno: command.turno,
+      };
+    }
     const funcionario = await this.userRepository.criarFuncionarioAdm(command);
-    console.log(funcionario);
-    await this.identityUserRepository.addUser(command, accessToken);
+    await this.identityUserRepository.addUser(command);
     return funcionario;
   }
 }

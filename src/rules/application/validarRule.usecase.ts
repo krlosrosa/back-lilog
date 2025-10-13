@@ -12,7 +12,6 @@ export class ValidarRuleUsecase {
   async execute(centerId: string): Promise<string> {
     const rule = await this.rulesRepository.findRulesByCenterId(centerId);
 
-    console.log(rule.conditions);
     const engine = new Engine();
     engine.addRule({
       conditions: rule.conditions,
@@ -30,7 +29,6 @@ export class ValidarRuleUsecase {
     };
 
     return engine.run(facts).then(({ events }) => {
-      console.log(events);
       return events[0]?.params?.mensagem;
     });
   }

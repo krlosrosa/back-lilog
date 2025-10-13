@@ -54,6 +54,7 @@ export class ProdutividadeResolver {
         tempoTotal: produtividade.calcularTempoTotal(),
         visitas: produtividade.quantidadeVisitas(),
         tempoTrabalhado: produtividade.calcularTempoTrabalhado(),
+        obs: produtividade.obs ?? '',
       };
     });
     console.log(produtividadeResponse);
@@ -71,7 +72,6 @@ export class ProdutividadeResolver {
       await this.produtividadeService.overViewProdutividade(
         overViewProdutividadeCommand,
       );
-    console.log(overViewProdutividade);
     return overViewProdutividade;
   }
 
@@ -82,6 +82,7 @@ export class ProdutividadeResolver {
     @Args('paleteId')
     paleteId: string,
   ): Promise<BuscarInfoDemandaResponseZodDto> {
-    return this.produtividadeService.buscarInfoDemanda(paleteId);
+    const data = await this.produtividadeService.buscarInfoDemanda(paleteId);
+    return data;
   }
 }

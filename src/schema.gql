@@ -24,6 +24,7 @@ type ProdutividadeModel {
   tempoPausas: Float!
   tempoTotal: Float!
   produtividade: Float!
+  obs: String
 }
 
 type OverViewModel {

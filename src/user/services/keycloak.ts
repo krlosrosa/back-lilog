@@ -27,12 +27,8 @@ export class KeycloakService implements IIdentityUserRepository {
     return this.kcAdminClient;
   }
 
-  async addUser(
-    user: CriarFuncionarioAdmZodDto,
-    accessToken: string,
-  ): Promise<string> {
+  async addUser(user: CriarFuncionarioAdmZodDto): Promise<string> {
     const kcAdminClient: KeycloakAdminClient = await this.getClient();
-    console.log({ keycloakUser: user, accessToken });
     const userCreated = await kcAdminClient.users.create({
       username: user.id,
       enabled: true,
@@ -46,29 +42,24 @@ export class KeycloakService implements IIdentityUserRepository {
         },
       ],
     });
-    console.log(userCreated);
     return userCreated.id;
   }
 
-  async deleteUser(userId: string, accessToken: string): Promise<void> {
+  async deleteUser(userId: string): Promise<void> {
     const kcAdminClient = await this.getClient();
     await kcAdminClient.users.delete({
       id: userId,
     });
   }
 
-  async resetPassword(
-    userId: string,
-    accessToken: string,
-    newPassword: string,
-  ): Promise<void> {
+  async resetPassword(userId: string, newPassword: string): Promise<void> {
     const kcAdminClient: KeycloakAdminClient = await this.getClient();
     const users = await kcAdminClient.users.find({ username: userId });
     if (users.length === 0) {
       throw new Error('User not found');
     }
-    console.log({ newPassword });
     const user = users[0];
+    console.log({ pass: newPassword });
     await kcAdminClient.users.resetPassword({
       id: user.id as string,
       credential: {
@@ -76,6 +67,13 @@ export class KeycloakService implements IIdentityUserRepository {
         value: newPassword,
         temporary: true,
       },
+    });
+  }
+
+  async logout(id: string) {
+    const kcAdminClient: KeycloakAdminClient = await this.getClient();
+    await kcAdminClient.users.logout({
+      id: id,
     });
   }
 }

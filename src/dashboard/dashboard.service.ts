@@ -3,6 +3,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { DemandaEntity } from 'src/produtividade/domain/entities/demanda.entity';
 import { AtualizarDashBoardCentroUsecase } from './application/atualizarDashBoardCentro.use';
 import { AtualizarDashBoardUserUsecase } from './application/atualizarDashBoardUser.use';
+import { BuscarAnomaliaPorCentroUsecase } from './application/buscarAnomaliasPorCentro.usecase';
 
 @Injectable()
 export class DashboardListener {
@@ -11,6 +12,8 @@ export class DashboardListener {
     private readonly atualizarDashBoardCentroUsecase: AtualizarDashBoardCentroUsecase,
     @Inject(AtualizarDashBoardUserUsecase)
     private readonly atualizarDashBoardUserUsecase: AtualizarDashBoardUserUsecase,
+    @Inject(BuscarAnomaliaPorCentroUsecase)
+    private readonly buscarAnomaliaPorCentroUsecase: BuscarAnomaliaPorCentroUsecase,
   ) {}
 
   @OnEvent('produtividade.finalizada')

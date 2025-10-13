@@ -37,6 +37,7 @@ export class DemandaMapper {
       processo: demanda.processo as TipoProcesso,
       inicio: demanda.inicio,
       fim: demanda.fim ?? null,
+      obs: demanda.obs,
       cadastradoPorId: demanda.cadastradoPorId,
       turno: demanda.turno as Turno,
       funcionarioId: demanda.funcionarioId,

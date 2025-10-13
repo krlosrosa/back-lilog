@@ -22,7 +22,6 @@ export class TransportadoraPrismaRepository
   }
 
   async findAllByCenter(centerId: string): Promise<ResponseTransportadoraDto> {
-    console.log('centerId', centerId);
     const transportadoras =
       await this.prisma.devolucaoTransportadoras.findMany();
 

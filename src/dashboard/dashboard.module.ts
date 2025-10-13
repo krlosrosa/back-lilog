@@ -8,6 +8,8 @@ import { DashboardResolver } from './dashboard.resolver';
 import { StatusPorTransporteUsecase } from './application/statusPorTransporte.usecase';
 import { DashCentrosUsecase } from './application/dashCentros.usecase';
 import { DashboardController } from './dashboard.controller';
+import { DashUmCentroUsecase } from './application/dashUmCentro.usecase';
+import { BuscarAnomaliaPorCentroUsecase } from './application/buscarAnomaliasPorCentro.usecase';
 
 @Module({
   controllers: [DashboardController],
@@ -17,6 +19,8 @@ import { DashboardController } from './dashboard.controller';
     AtualizarDashBoardUserUsecase,
     StatusPorTransporteUsecase,
     DashCentrosUsecase,
+    DashUmCentroUsecase,
+    BuscarAnomaliaPorCentroUsecase,
     {
       provide: 'IDashboardRepository',
       useClass: DashCenterPrismaRepository,

@@ -21,6 +21,7 @@ export class AtualizarDashBoardCentroUsecase {
       });
     if (!dashboard) {
       const dashCenter = DashCenterEntity.create({
+        empresa: demanda.empresa,
         dataRegistro: demanda.dataRegistro,
         centerId: demanda.centerId,
         totalCaixas: demanda.quantidadeCaixas(),
@@ -38,6 +39,7 @@ export class AtualizarDashBoardCentroUsecase {
       return this.dashboardRepository.atualizarDashBoardCentro(dashCenter);
     }
     const newDashboard = DashCenterEntity.create({
+      empresa: demanda.empresa,
       dataRegistro: dashboard.dataRegistro,
       centerId: dashboard.centerId,
       processo: dashboard.processo,

@@ -88,7 +88,6 @@ export class TransporteController {
       command,
       req['accountId'],
     );
-    console.log(result);
     return result;
   }
 

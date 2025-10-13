@@ -105,7 +105,6 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
       ];
     }
 
-    console.log(where);
     const demandas = await this.prisma.demanda.findMany({
       where: {
         ...where,
@@ -191,7 +190,6 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
   async overViewProdutividade(
     command: OverViewProdutividadeZodDto,
   ): Promise<OverViewProdutividadeResponseZodDto> {
-    console.log(command);
     const { startOfDay, endOfDay } = getStartAndEndOfDay(
       new Date(command.data),
     );
@@ -313,5 +311,41 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
             demanda.paletes[0].transporte.dataExpedicao.toISOString(),
         })
       : null;
+  }
+
+  async infoDemandaByUser(
+    userId: any,
+    centerId: any,
+  ): Promise<DemandaEntity[]> {
+    const demandas = await this.prisma.demanda.findMany({
+      where: {
+        centerId: centerId,
+        funcionarioId: userId,
+        OR: [
+          {
+            status: 'EM_PROGRESSO',
+          },
+          {
+            status: 'PAUSA',
+          },
+        ],
+      },
+      include: {
+        paletes: {
+          include: {
+            transporte: true,
+          },
+        },
+        pausas: true,
+        funcionario: true,
+        center: true,
+      },
+    });
+    return demandas.map((demanda) =>
+      DemandaMapper.fromPrismaToEntity({
+        ...demanda,
+        dataRegistro: demanda.paletes[0].transporte.dataExpedicao.toISOString(),
+      }),
+    );
   }
 }

@@ -15,6 +15,9 @@ import { RemoverFuncionarioCentroUsecase } from './application/usecases/removerF
 import { AtribuirCentroAFuncionarioZodDto } from './dto/atribuirCentroAFuncionario.dto';
 import { ListarFuncionariosAdmPorCentroUsecase } from './application/usecases/listarFuncionariosAdmPorCentro.usecase';
 import { ResetSenhaUsecase } from './application/usecases/resetSenha.usecase';
+import { CriarFuncionarioAdmEmMassaUsecase } from './application/usecases/criarFuncionarioAdmEmMassa.usecase';
+import { CriarFuncionarioAdmEmMassaZodDto } from './dto/criarFuncionarioAdmEmMassa.dto';
+import { LogoutUseCase } from './application/usecases/logout.usecase';
 
 @Injectable()
 export class UserService {
@@ -41,6 +44,10 @@ export class UserService {
     private readonly listarFuncionariosAdmPorCentroUsecase: ListarFuncionariosAdmPorCentroUsecase,
     @Inject(ResetSenhaUsecase)
     private readonly resetSenhaUsecase: ResetSenhaUsecase,
+    @Inject(CriarFuncionarioAdmEmMassaUsecase)
+    private readonly criarFuncionarioAdmEmMassaUseCase: CriarFuncionarioAdmEmMassaUsecase,
+    @Inject(LogoutUseCase)
+    private readonly logoutUseCase: LogoutUseCase,
   ) {}
 
   criarNovoFuncionario(command: CriarNovoFuncionarioZodDto) {
@@ -79,11 +86,29 @@ export class UserService {
     return this.criarFuncionarioAdmUsecase.execute(command, accessToken);
   }
 
+  criarFuncionarioAdmEmMassa(
+    centerId: string,
+    processo: string,
+    senha: string,
+    comand: CriarFuncionarioAdmEmMassaZodDto,
+  ) {
+    return this.criarFuncionarioAdmEmMassaUseCase.execute(
+      centerId,
+      processo,
+      senha,
+      comand,
+    );
+  }
+
   removerFuncionarioDoCentro(userId: string, centerId: string) {
     return this.removerFuncionarioDoCentroUsecase.execute(userId, centerId);
   }
 
-  resetSenha(userId: string, accessToken: string, newPassword: string) {
+  resetSenha(userId: string, newPassword: string, accessToken: string) {
     return this.resetSenhaUsecase.execute(userId, newPassword, accessToken);
+  }
+
+  logout(id: string) {
+    return this.logoutUseCase.execute(id);
   }
 }

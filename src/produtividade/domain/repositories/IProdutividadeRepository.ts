@@ -21,4 +21,5 @@ export interface IProdutividadeRepository {
     command: OverViewProdutividadeZodDto,
   ): Promise<OverViewProdutividadeResponseZodDto>;
   buscarInfoDemanda(demandaId: number): Promise<DemandaEntity | null>;
+  infoDemandaByUser(userId, centerId): Promise<DemandaEntity[]>;
 }

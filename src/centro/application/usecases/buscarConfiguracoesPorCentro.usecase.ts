@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DefinirConfiguracaoImpressaoDto } from 'src/centro/dto/definirConfiguracaoCentro.dto';
 import { type ICenterRepository } from 'src/centro/domain/repositories/center.respository';
 
@@ -12,6 +12,11 @@ export class BuscarConfiguracoesPorCentroUsecase {
   async execute(
     centerId: string,
   ): Promise<Omit<DefinirConfiguracaoImpressaoDto, 'id'>> {
-    return this.centerRepository.buscarConfiguracoesPorCentro(centerId);
+    const configuracoes =
+      await this.centerRepository.buscarConfiguracoesPorCentro(centerId);
+    if (!configuracoes) {
+      throw new NotFoundException('Configurações de impressão não encontradas');
+    }
+    return configuracoes;
   }
 }

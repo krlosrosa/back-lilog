@@ -44,7 +44,6 @@ export class DemandaPrismaRepository implements IDemandaRepository {
     centroId: string,
   ): Promise<DemandaDevolucaoDtoResponse> {
     const { startOfDay, endOfDay } = getStartAndEndOfDay(new Date(data));
-    console.log(startOfDay, endOfDay);
     const demandas = await this.prisma.devolucaoDemanda.findMany({
       where: {
         centerId: centroId,

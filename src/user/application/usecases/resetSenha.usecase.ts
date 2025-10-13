@@ -12,10 +12,6 @@ export class ResetSenhaUsecase {
     newPassword: string,
     accessToken: string,
   ): Promise<void> {
-    await this.identityUserRepository.resetPassword(
-      userId,
-      newPassword,
-      accessToken,
-    );
+    await this.identityUserRepository.resetPassword(userId, newPassword);
   }
 }

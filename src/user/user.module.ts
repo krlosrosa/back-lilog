@@ -15,6 +15,8 @@ import { KeycloakService } from './services/keycloak';
 import { RemoverFuncionarioCentroUsecase } from './application/usecases/removerFuncionarioCentro.usecase';
 import { ListarFuncionariosAdmPorCentroUsecase } from './application/usecases/listarFuncionariosAdmPorCentro.usecase';
 import { ResetSenhaUsecase } from './application/usecases/resetSenha.usecase';
+import { CriarFuncionarioAdmEmMassaUsecase } from './application/usecases/criarFuncionarioAdmEmMassa.usecase';
+import { LogoutUseCase } from './application/usecases/logout.usecase';
 
 @Module({
   controllers: [UserController],
@@ -31,6 +33,8 @@ import { ResetSenhaUsecase } from './application/usecases/resetSenha.usecase';
     RemoverFuncionarioCentroUsecase,
     ListarFuncionariosAdmPorCentroUsecase,
     ResetSenhaUsecase,
+    CriarFuncionarioAdmEmMassaUsecase,
+    LogoutUseCase,
     {
       provide: 'IUserRepository',
       useClass: UserPrismaRepository,

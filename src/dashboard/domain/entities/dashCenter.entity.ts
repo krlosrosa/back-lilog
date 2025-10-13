@@ -17,6 +17,7 @@ export class DashCenterEntity {
   private readonly _totalTempoTrabalhado: number;
   private readonly _totalDemandas: number;
   private readonly _processo: TipoProcesso;
+  private readonly _empresa: string;
   private readonly _turno: Turno;
 
   constructor(params: DashCenterEntityType) {
@@ -34,6 +35,7 @@ export class DashCenterEntity {
     this._totalDemandas = params.totalDemandas;
     this._processo = params.processo;
     this._turno = params.turno;
+    this._empresa = params.empresa;
   }
 
   static create(params: DashCenterEntityType): DashCenterEntity {
@@ -95,6 +97,10 @@ export class DashCenterEntity {
   get turno(): Turno {
     return this._turno;
   }
+
+  get empresa(): string {
+    return this._empresa;
+  }
 }
 
 type DashCenterEntityType = {
@@ -112,4 +118,5 @@ type DashCenterEntityType = {
   totalDemandas: number;
   processo: TipoProcesso;
   turno: Turno;
+  empresa: string;
 };

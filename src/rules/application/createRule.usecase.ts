@@ -11,7 +11,6 @@ export class CreateRuleUsecase {
   ) {}
   async execute(command: CreateRuleDto): Promise<string> {
     const ruleEngine = convertQueryBuilderToRulesEngine(command.conditions);
-    console.log({ ruleEngine });
     await this.rulesRepository.create({ ...command, conditions: ruleEngine });
     return 'Regra criada com sucesso';
   }

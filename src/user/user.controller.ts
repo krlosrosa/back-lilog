@@ -33,6 +33,7 @@ import type { CriarFuncionariosEmMassaZodDto as CriarFuncionariosEmMassaZodDtoT 
 import { CriarFuncionarioAdmZodDto as CriarFuncionarioAdmZodDto } from './dto/criarFuncionarioAdm.dto';
 import { AtribuirCentroAFuncionarioZodDto } from './dto/atribuirCentroAFuncionario.dto';
 import { ApiStandardGetResponse } from 'src/_shared/decorators/api-standard-responses.decorator';
+import { CriarFuncionarioAdmEmMassaZodDto } from './dto/criarFuncionarioAdmEmMassa.dto';
 
 @ApiTags('usuario')
 @UseGuards(AuthGuard)
@@ -75,6 +76,30 @@ export class UserController {
 
   @ApiOperation({
     summary: 'Cria um novo funcionário',
+    operationId: 'criarFuncionarioAdmEmMassa',
+  })
+  @ApiBody({
+    description: 'Dados do funcionário',
+    type: CriarFuncionarioAdmEmMassaZodDto,
+  })
+  @ApiCommonErrors()
+  @Post('criar-funcionario-adm-em-massa/:centerId/:processo/:senha')
+  async criarFuncionarioAdmEmMassa(
+    @Body() command: CriarFuncionarioAdmEmMassaZodDto,
+    @Param('centerId') centerId: string,
+    @Param('processo') processo: string,
+    @Param('senha') senha: string,
+  ) {
+    return this.userService.criarFuncionarioAdmEmMassa(
+      centerId,
+      processo,
+      senha,
+      command,
+    );
+  }
+
+  @ApiOperation({
+    summary: 'Cria um novo funcionário',
     operationId: 'criarNovoFuncionario',
   })
   @ApiBody({
@@ -85,7 +110,6 @@ export class UserController {
   @ApiCommonErrors()
   @Post('criar-novo-funcionario')
   async criarNovoFuncionario(@Body() command: CriarNovoFuncionarioZodDtoT) {
-    console.log({ command });
     return this.userService.criarNovoFuncionario(command);
   }
 
@@ -193,16 +217,27 @@ export class UserController {
     status: 200,
     description: 'Senha resetada com sucesso',
   })
-  @ApiBody({
-    description: 'Dados do usuario',
-  })
   @ApiCommonErrors()
-  @Post('reset-senha/:userId')
+  @Post('reset-senha/:userId/:password')
   async resetSenha(
     @Param('userId') userId: string,
-    @Body() newPassword: string,
+    @Param('password') newPassword: string,
     @Req() req: Request,
   ) {
     return this.userService.resetSenha(userId, newPassword, req['accessToken']);
+  }
+
+  @ApiOperation({
+    summary: 'Logout',
+    operationId: 'logout',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Logout Realizado com sucesso',
+  })
+  @ApiCommonErrors()
+  @Post('logout/:id')
+  async logout(@Param('id') id: string) {
+    return this.userService.logout(id);
   }
 }

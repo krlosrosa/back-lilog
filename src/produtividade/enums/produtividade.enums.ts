@@ -29,3 +29,10 @@ export enum StatusDemanda {
   PAUSA = 'PAUSA',
   CANCELADA = 'CANCELADA',
 }
+
+export enum RoleCenter {
+  FUNCIONARIO = 'FUNCIONARIO',
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+  MASTER = 'MASTER',
+}

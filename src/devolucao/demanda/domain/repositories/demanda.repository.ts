@@ -1,3 +1,4 @@
+import { ContabilByIdResponseZodDto } from '../../dtos/contabilByIdResponseZod.dto';
 import { DemandaDevolucaoDtoResponse } from '../../dtos/demandaDevoluca.dto';
 import { AddItensEmDemandaDto } from '../../dtos/ravex/addItensEmDemanda.dto';
 import { ReturnInfoGeralRavex } from '../../dtos/ravex/returnInfoGeralRavex';

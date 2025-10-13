@@ -16,10 +16,9 @@ export class GetInfoByViagemIdRavex {
   ) {}
 
   async execute(viagemId: string): Promise<ReturnInfoGeralRavex> {
-    const ravex = await this.ravexRepository.authRavex(
-      'carlos.rosa@br.lactalis.com',
-      'MuriloJose@2025',
-    );
+    const login = 'carlos.rosa@br.lactalis.com';
+    const senha = 'MuriloJose@2025';
+    const ravex = await this.ravexRepository.authRavex(login, senha);
     const ravexViagem = await this.ravexRepository.getRavexByViagemId(
       viagemId,
       ravex?.access_token || '',

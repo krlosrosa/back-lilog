@@ -17,7 +17,6 @@ import { TesteModule } from './teste/teste.module';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { APP_PIPE } from '@nestjs/core';
 import { DashboardModule } from './dashboard/dashboard.module';
-import { FastifyMulterModule } from '@nest-lab/fastify-multer';
 import {
   PrometheusModule,
   makeCounterProvider,
@@ -29,6 +28,7 @@ import { ProdutoModule } from './produto/produto.module';
 import { TransportadoraModule } from './transportadora/transportadora.module';
 import { PwaModule } from './pwa/pwa.module';
 import { RulesModule } from './rules/rules.module';
+import { AnomaliasProdutividadeModule } from './anomalias_produtividade/anomalias_produtividade.module';
 
 @Module({
   imports: [
@@ -45,7 +45,6 @@ import { RulesModule } from './rules/rules.module';
     PrometheusModule.register({
       path: '/metrics',
     }),
-    FastifyMulterModule,
     PrismaModule,
     AxiosModule,
     ProdutividadeModule,
@@ -60,6 +59,7 @@ import { RulesModule } from './rules/rules.module';
     TransportadoraModule,
     PwaModule,
     RulesModule,
+    AnomaliasProdutividadeModule,
   ],
   controllers: [AppController],
   providers: [

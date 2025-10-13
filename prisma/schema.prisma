@@ -282,6 +282,7 @@ model DashboardProdutividadeCenter {
   dataRegistro          DateTime
   centerId              String
   cluster               String @default("distribuicao")
+  empresa               String @default("LACTALIS")
   totalCaixas           Int
   totalUnidades         Int
   totalPaletes          Int
@@ -297,6 +298,24 @@ model DashboardProdutividadeCenter {
   center                Center       @relation(fields: [centerId], references: [centerId])
 
   @@unique([centerId, processo, dataRegistro, turno])
+}
+
+model AnomaliaProdutividade {
+  id Int @id @default(autoincrement())
+  demandaId Int
+  centerId String
+  funcionarioId String
+  nomeFuncionario String
+  cadastroPorId String
+  nomeCadastradoPor String
+  inicio          DateTime
+  fim             DateTime?
+  caixas Int
+  unidades Int
+  paletes Int
+  enderecosVisitado Int
+  produtividade Float
+  motivoAnomalia String
 }
 
 
@@ -329,6 +348,7 @@ model DevolucaoDemanda {
   devolucaoAnomalias DevolucaoAnomalias[]
   devolucaoItens DevolucaoItens[]
   historicoStatus DevolucaoHistoricoStatus[] // Relação com o histórico
+  devolucaImagens DevolucaImagens[]
   devolucaoCheckList DevolucaoCheckList?
 
   @@map("devolucao_demanda")  
@@ -423,8 +443,17 @@ model DevolucaoCheckList {
   demanda DevolucaoDemanda @relation(fields: [demandaId], references: [id], onDelete: Cascade)
   criadoEm DateTime @default(now())
   atualizadoEm DateTime @updatedAt
+  anomalias String[]
 
   @@map("devolucao_check_list")
+}
+
+model DevolucaImagens {
+  id Int @id @default(autoincrement())
+  demandaId Int
+  demanda DevolucaoDemanda @relation(fields: [demandaId], references: [id], onDelete: Cascade)
+  processo String
+  tag String
 }
 
 // RULES ENGINES

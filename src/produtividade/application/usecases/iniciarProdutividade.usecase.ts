@@ -50,21 +50,28 @@ export class IniciarProdutividadeUsecase {
       this.logger.warn('Funcionário não encontrado.', { command });
       throw new BadRequestException('Funcionário não encontrado.');
     }
-    const funcDemanda = await this.userRepository.buscarPorIdEAssociadoADemanda(
-      command.cadastradoPorId,
+    const funcDemandas = await this.produtividadeRepository.infoDemandaByUser(
+      command.funcionarioId,
       command.centerId,
     );
 
-    if (funcDemanda) {
-      const pausaValida = funcDemanda.validarPausa();
-      if (!pausaValida) {
-        this.logger.warn('Funcionário não pode iniciar uma demanda.', {
-          funcDemanda,
-          command,
-        });
-        throw new BadRequestException(
-          'Funcionário não pode iniciar uma demanda.',
-        );
+    if (funcDemandas) {
+      for (const demanda of funcDemandas) {
+        if (demanda.status === 'EM_PROGRESSO') {
+          throw new BadRequestException(
+            `Funcionário não pode iniciar uma nova demanda pois, esta alocado na demanda ${demanda.id}.`,
+          );
+        }
+        const pausaValida = demanda.validarPausa();
+        if (!pausaValida) {
+          this.logger.warn('Funcionário não pode iniciar uma demanda.', {
+            demanda,
+            command,
+          });
+          throw new BadRequestException(
+            `Funcionário não pode iniciar uma nova demanda pois, esta alocado na demanda ${demanda.id}.`,
+          );
+        }
       }
     }
 

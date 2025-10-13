@@ -3,6 +3,7 @@ import { PrismaService } from 'src/_shared/infra/prisma/prisma.service';
 import { DemandaEntity } from 'src/produtividade/domain/entities/demanda.entity';
 import { PaleteEntity } from 'src/produtividade/domain/entities/palete.entity';
 import {
+  RoleCenter,
   StatusDemanda,
   StatusPalete,
   TipoProcesso,
@@ -113,7 +114,7 @@ export class UserPrismaRepository implements IUserRepository {
         userId: command.userId,
         centerId: command.centerId,
         role: command.role,
-        processo: 'EXPEDICAO',
+        processo: command.processo || 'EXPEDICAO',
       },
     });
   }
@@ -130,10 +131,17 @@ export class UserPrismaRepository implements IUserRepository {
   }
 
   async buscarPorId(id: string, centerId: string): Promise<UserEntity | null> {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: {
-        id,
-        centerId,
+        assignedCenters: {
+          every: {
+            userId: id,
+            centerId,
+          },
+        },
+      },
+      include: {
+        assignedCenters: true,
       },
     });
     if (!user) return null;
@@ -142,6 +150,82 @@ export class UserPrismaRepository implements IUserRepository {
       name: user.name,
       centerId: user.centerId,
       turno: user.turno as Turno,
+      role: user.assignedCenters.map((role) => role.role as RoleCenter),
+    });
+  }
+
+  async buscarFuncionarioPorId(id: string): Promise<UserEntity | null> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        assignedCenters: true,
+      },
+    });
+    if (!user) return null;
+    return UserEntity.create({
+      id: user.id,
+      name: user.name,
+      centerId: user.centerId,
+      turno: user.turno as Turno,
+      role: user.assignedCenters.map((role) => role.role as RoleCenter),
+    });
+  }
+
+  async buscarFuncionarioEmMassaCadastradoPorIds(
+    ids: string[],
+  ): Promise<UserEntity[]> {
+    const users = await this.prisma.user.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      include: {
+        assignedCenters: true,
+      },
+    });
+    return users.map((user) => {
+      return UserEntity.create({
+        id: user.id,
+        name: user.name,
+        centerId: user.centerId,
+        turno: user.turno as Turno,
+        role: user.assignedCenters.map((role) => role.role as RoleCenter),
+      });
+    });
+  }
+
+  async buscarFuncionarioEmMassaPorIds(
+    ids: string[],
+    processo: string,
+    centerId: string,
+  ): Promise<UserEntity[]> {
+    const users = await this.prisma.user.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+        assignedCenters: {
+          some: {
+            processo: processo,
+            centerId,
+          },
+        },
+      },
+      include: {
+        assignedCenters: true,
+      },
+    });
+    return users.map((user) => {
+      return UserEntity.create({
+        id: user.id,
+        name: user.name,
+        centerId: user.centerId,
+        turno: user.turno as Turno,
+        role: user.assignedCenters.map((role) => role.role as RoleCenter),
+      });
     });
   }
 
@@ -223,7 +307,7 @@ export class UserPrismaRepository implements IUserRepository {
     centerId: string,
   ): Promise<ListarFuncionariosPorCentroZodDto> {
     const funcionarios = await this.prisma.userCenter.findMany({
-      where: { centerId },
+      where: { centerId, NOT: [{ role: 'MASTER' }] },
       include: {
         user: true,
       },
@@ -241,7 +325,12 @@ export class UserPrismaRepository implements IUserRepository {
     centerId: string,
   ): Promise<ListarFuncionariosPorCentroZodDto> {
     const funcionarios = await this.prisma.userCenter.findMany({
-      where: { centerId, role: 'USER' },
+      where: {
+        centerId,
+        role: {
+          not: 'FUNCIONARIO',
+        },
+      },
       include: {
         user: true,
       },

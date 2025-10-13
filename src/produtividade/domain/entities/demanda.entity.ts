@@ -24,6 +24,7 @@ export class DemandaEntity {
   private readonly _pausas?: PausaEntity[];
   private readonly _center?: CenterEntity;
   private readonly _criadoEm: Date;
+
   constructor(params: DemandaEntityType) {
     this._id = params.id;
     this._processo = params.processo;
@@ -61,6 +62,7 @@ export class DemandaEntity {
   }
 
   public validarPausa(): boolean {
+    console.log(this._pausas);
     const pausaAberta = this._pausas?.filter(
       (pausa) => pausa.fim === null || pausa.fim === undefined,
     );
@@ -71,8 +73,10 @@ export class DemandaEntity {
 
     if (pausaAberta.length > 0) {
       const motivo = pausaAberta.every(
-        (pausa) => pausa.motivo === 'FALTA_DE_MATERIAL',
+        (pausa) => pausa.motivo === 'FALTA_PRODUTO',
       );
+
+      console.log({ abertar: motivo });
 
       if (!motivo) {
         return false;
@@ -140,9 +144,12 @@ export class DemandaEntity {
   }
 
   public finalizarDemanda(obs?: string): void {
+    const temObs = !!this._obs && this._obs.length > 0;
     this._status = StatusDemanda.FINALIZADA;
     this._fim = new Date();
-    this._obs = obs ?? null;
+    if (obs) {
+      this._obs = temObs ? `${this._obs} | ${obs}}` : obs;
+    }
   }
 
   // GETTERS

@@ -82,6 +82,9 @@ export class ProdutividadeModel {
 
   @Field(() => Number)
   produtividade: number;
+
+  @Field(() => String, { nullable: true })
+  obs: string | null;
 }
 
 @InputType()

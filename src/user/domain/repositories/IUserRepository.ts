@@ -14,6 +14,13 @@ export interface IUserRepository {
     id: string,
     centerId: string,
   ): Promise<DemandaEntity | null>;
+  buscarFuncionarioPorId(id: string): Promise<UserEntity | null>;
+  buscarFuncionarioEmMassaPorIds(
+    id: string[],
+    processo: string,
+    centerId: string,
+  ): Promise<UserEntity[]>;
+  buscarFuncionarioEmMassaCadastradoPorIds(id: string[]): Promise<UserEntity[]>;
   getInfoMe(id: string): Promise<ResponseInfoMeZodDto>;
   listarFuncionariosPorCentro(
     centerId: string,
