@@ -47,13 +47,14 @@ export class PausaPrismaRepository implements IPausaRepository {
   async buscarPausaGeralAtiva(
     params: AddPausaGeralInfraDto,
   ): Promise<PausaGeralEntity | null> {
-    const { centerId, turno, processo } = params;
+    const { centerId, turno, processo, segmento } = params;
     const pausasGerais = await this.prisma.pausaGeral.findFirst({
       where: {
         centerId,
         turno,
         processo,
         fim: null,
+        segmento: segmento,
       },
       include: {
         pausas: true,
@@ -91,6 +92,7 @@ export class PausaPrismaRepository implements IPausaRepository {
           turno: params.turno,
           centerId: params.centerId,
           registradoPorId: cadastradoPorId,
+          segmento: params.segmento,
           pausas: {
             create: demandas.map((demanda) => ({
               demandaId: demanda.id,

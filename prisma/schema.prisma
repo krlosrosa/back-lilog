@@ -247,6 +247,7 @@ model PausaGeral {
   processo        TipoProcesso
   turno           Turno
   registradoPorId String
+  segmento        String
   criadoEm        DateTime     @default(now())
   atualizadoEm    DateTime     @updatedAt
   pausas          Pausa[]
