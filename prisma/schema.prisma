@@ -32,7 +32,7 @@ model Center {
   state                     String
   cluster                   String                     
   configuracao              Configuracao[]
-  configuracaoImpressaoMapa ConfiguracaoImpressaoMapa?
+  configuracaoImpressaoMapa ConfiguracaoImpressaoMapa[]
   dashboardProdutividadeCenter    DashboardProdutividadeCenter[]
   dashboardProdutividadeUser    DashboardProdutividadeUser[]
   demanda                   Demanda[]
@@ -66,14 +66,17 @@ model ConfiguracaoImpressaoMapa {
   separarPaleteFull    Boolean           @default(false)
   separarUnidades      Boolean           @default(false)
   exibirInfoCabecalho  ExibirClienteCabecalhoEnum?           @default(NENHUM)
+  empresa              String            @default("LDB")
   segregarFifo         String[]
   dataMaximaPercentual Int               @default(0)
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
-  centerId             String            @unique
+  centerId             String
   atribuidoPorId       String?
   atribuidoPor         User?             @relation(fields: [atribuidoPorId], references: [id])
   center               Center            @relation(fields: [centerId], references: [centerId])
+
+  @@unique([centerId, empresa])
 }
 
 model Configuracao {
@@ -93,6 +96,7 @@ model User {
   password                  String?
   centerId                  String
   token                     String?
+  empresa                   String @default("LDB")
   turno                     Turno                       @default(NOITE)
   resetSenha                Boolean                     @default(true)
   configuracaoImpressaoMapa ConfiguracaoImpressaoMapa[]

@@ -13,6 +13,7 @@ export const ResponseInfoMeSchema = z.object({
       centerId: z.string(),
       role: z.nativeEnum(Role),
       processo: z.string(),
+      empresa: z.string(),
     }),
   ),
 });

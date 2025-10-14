@@ -49,6 +49,7 @@ export class UserPrismaRepository implements IUserRepository {
       nome: funcionario.name,
       turno: funcionario.turno as Turno,
       role: funcionario.assignedCenters[0].role as Role,
+      empresa: funcionario.empresa,
     };
   }
 
@@ -61,10 +62,12 @@ export class UserPrismaRepository implements IUserRepository {
         turno: command.turno as Turno,
         centerId: command.centerId,
         id: command.id,
+        empresa: command.empresa,
         assignedCenters: {
           create: {
             role: 'USER',
             centerId: command.centerId,
+            processo: command.processo,
           },
         },
       },
@@ -78,6 +81,7 @@ export class UserPrismaRepository implements IUserRepository {
       nome: funcionario.name,
       turno: funcionario.turno as Turno,
       role: funcionario.assignedCenters[0].role as Role,
+      empresa: funcionario.empresa,
     };
   }
 
@@ -89,6 +93,7 @@ export class UserPrismaRepository implements IUserRepository {
       name: user.name,
       turno: user.turno as Turno,
       centerId: params.centerId,
+      empresa: user.empresa,
     }));
     return this.prisma.$transaction(async (tx) => {
       await tx.user.createMany({
@@ -292,6 +297,9 @@ export class UserPrismaRepository implements IUserRepository {
   async getInfoMe(id: string): Promise<ResponseInfoMeZodDto> {
     const user = await this.prisma.userCenter.findMany({
       where: { userId: id },
+      include: {
+        user: true,
+      },
     });
 
     return {
@@ -299,6 +307,7 @@ export class UserPrismaRepository implements IUserRepository {
         centerId: userCenter.centerId,
         role: userCenter.role as Role,
         processo: userCenter.processo,
+        empresa: userCenter.user.empresa,
       })),
     };
   }
@@ -307,7 +316,7 @@ export class UserPrismaRepository implements IUserRepository {
     centerId: string,
   ): Promise<ListarFuncionariosPorCentroZodDto> {
     const funcionarios = await this.prisma.userCenter.findMany({
-      where: { centerId, NOT: [{ role: 'MASTER' }] },
+      where: { centerId, role: 'FUNCIONARIO' },
       include: {
         user: true,
       },

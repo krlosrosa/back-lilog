@@ -22,6 +22,7 @@ export class CriarFuncionarioAdmUsecase {
         centerId: command.centerId,
         role: 'USER',
         userId: command.id,
+        processo: command.processo,
       });
       return {
         centerId: command.centerId,
@@ -29,6 +30,7 @@ export class CriarFuncionarioAdmUsecase {
         nome: command.nome,
         role: 'USER',
         turno: command.turno,
+        empresa: command.empresa,
       };
     }
     const funcionario = await this.userRepository.criarFuncionarioAdm(command);

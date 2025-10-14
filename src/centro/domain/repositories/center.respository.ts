@@ -5,6 +5,7 @@ import { EditarCentroDto } from 'src/centro/dto/editarCentro.dto';
 export interface ICenterRepository {
   buscarConfiguracoesPorCentro(
     centerId: string,
+    empresa: string,
   ): Promise<Omit<DefinirConfiguracaoImpressaoDto, 'id'>>;
   create(center: CriarNovoCentroZodDto): Promise<CriarNovoCentroZodDto>;
   edit(center: EditarCentroDto, centerId: string): Promise<boolean>;
@@ -12,6 +13,7 @@ export interface ICenterRepository {
   definirConfiguracaoImpressao(
     configuracao: DefinirConfiguracaoImpressaoDto,
     centerId: string,
+    empresa: string,
     atribuidoPorId: string,
   ): Promise<boolean>;
   findAll(): Promise<CriarNovoCentroZodDto[]>;

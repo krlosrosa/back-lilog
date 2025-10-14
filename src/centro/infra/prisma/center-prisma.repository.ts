@@ -35,12 +35,20 @@ export class CenterPrismaRepository implements ICenterRepository {
   async definirConfiguracaoImpressao(
     configuracao: DefinirConfiguracaoImpressaoDto,
     centerId: string,
+    empresa: string,
     atribuidoPorId: string,
   ): Promise<boolean> {
+    console.log({ atribuidoPorId })
     await this.prisma.configuracaoImpressaoMapa.upsert({
-      where: { centerId },
+      where: {
+        centerId_empresa: {
+          centerId,
+          empresa,
+        },
+      },
       update: {
         ...configuracao,
+        empresa,
         atribuidoPorId,
         dataMaximaPercentual: configuracao.dataMaximaPercentual ?? 0,
       },
@@ -48,6 +56,7 @@ export class CenterPrismaRepository implements ICenterRepository {
         ...configuracao,
         centerId,
         atribuidoPorId,
+        empresa,
         dataMaximaPercentual: configuracao.dataMaximaPercentual ?? 0,
       },
     });
@@ -56,10 +65,16 @@ export class CenterPrismaRepository implements ICenterRepository {
 
   async buscarConfiguracoesPorCentro(
     centerId: string,
+    empresa: string,
   ): Promise<Omit<DefinirConfiguracaoImpressaoDto, 'id'>> {
     const configuracao = await this.prisma.configuracaoImpressaoMapa.findUnique(
       {
-        where: { centerId },
+        where: {
+          centerId_empresa: {
+            centerId,
+            empresa,
+          },
+         },
       },
     );
     //@ts-expect-error

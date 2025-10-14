@@ -10,6 +10,7 @@ export const CriarFuncionarioAdmSchema = z.object({
   credencial: z.string(),
   turno: z.string(),
   processo: z.string().optional(),
+  empresa: z.string(),
 });
 
 export class CriarFuncionarioAdmZodDto extends createZodDto(

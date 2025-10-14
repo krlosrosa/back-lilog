@@ -11,9 +11,13 @@ export class BuscarConfiguracoesPorCentroUsecase {
 
   async execute(
     centerId: string,
+    empresa: string,
   ): Promise<Omit<DefinirConfiguracaoImpressaoDto, 'id'>> {
     const configuracoes =
-      await this.centerRepository.buscarConfiguracoesPorCentro(centerId);
+      await this.centerRepository.buscarConfiguracoesPorCentro(
+        centerId,
+        empresa,
+      );
     if (!configuracoes) {
       throw new NotFoundException('Configurações de impressão não encontradas');
     }

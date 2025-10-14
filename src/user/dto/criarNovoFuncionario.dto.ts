@@ -7,6 +7,7 @@ export const CriarNovoFuncionarioSchema = z.object({
   nome: z.string(),
   turno: z.string(),
   role: z.string(),
+  empresa: z.string(),
 });
 
 export class CriarNovoFuncionarioZodDto extends createZodDto(

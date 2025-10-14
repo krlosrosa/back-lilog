@@ -41,17 +41,19 @@ export class CentroService {
   definirConfiguracaoImpressao(
     command: DefinirConfiguracaoImpressaoDto,
     centerId: string,
+    empresa: string,
     atribuidoPorId: string,
   ) {
     return this.definirConfiguracaoImpressaoUsecase.execute(
       command,
       centerId,
+      empresa,
       atribuidoPorId,
     );
   }
 
-  buscarConfiguracoesImpressao(centerId: string) {
-    return this.buscarConfiguracoesImpressaoUsecase.execute(centerId);
+  buscarConfiguracoesImpressao(centerId: string, empresa: string) {
+    return this.buscarConfiguracoesImpressaoUsecase.execute(centerId, empresa);
   }
 
   buscarTodosOsCentros(): Promise<CriarNovoCentroZodDto[]> {

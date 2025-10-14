@@ -27,6 +27,7 @@ export class CriarNovoFuncionarioUsecase {
         nome: command.nome,
         role: 'FUNCIONARIO',
         turno: command.turno,
+        empresa: command.empresa,
       };
     }
     return this.userRepository.criarNovoFuncionario(command);

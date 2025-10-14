@@ -11,11 +11,13 @@ export class DefinirConfiguracaoImpressaoUsecase {
   async execute(
     command: DefinirConfiguracaoImpressaoDto,
     centerId: string,
+    empresa: string,
     atribuidoPorId: string,
   ): Promise<boolean> {
     return this.centerRepository.definirConfiguracaoImpressao(
       command,
       centerId,
+      empresa,
       atribuidoPorId,
     );
   }

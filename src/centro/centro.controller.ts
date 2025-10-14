@@ -80,15 +80,17 @@ export class CentroController {
     description: 'Configuração de impressão definida com sucesso',
   })
   @ApiCommonErrors()
-  @Put('definir-configuracao-impressao/:centerId')
+  @Put('definir-configuracao-impressao/:centerId/:empresa')
   async definirConfiguracaoImpressao(
     @Param('centerId') centerId: string,
+    @Param('empresa') empresa: string,
     @Body() command: DefinirConfiguracaoImpressaoDto,
     @Req() req: Request,
   ) {
     return this.centroService.definirConfiguracaoImpressao(
       command,
       centerId,
+      empresa,
       req['accountId'],
     );
   }
@@ -103,9 +105,12 @@ export class CentroController {
     description: 'Configurações de impressão buscadas com sucesso',
   })
   @ApiCommonErrors()
-  @Get('buscar-configuracoes-impressao/:centerId')
-  async buscarConfiguracoesImpressao(@Param('centerId') centerId: string) {
-    return this.centroService.buscarConfiguracoesImpressao(centerId);
+  @Get('buscar-configuracoes-impressao/:centerId/:empresa')
+  async buscarConfiguracoesImpressao(
+    @Param('centerId') centerId: string,
+    @Param('empresa') empresa: string,
+  ) {
+    return this.centroService.buscarConfiguracoesImpressao(centerId, empresa);
   }
 
   @ApiOperation({

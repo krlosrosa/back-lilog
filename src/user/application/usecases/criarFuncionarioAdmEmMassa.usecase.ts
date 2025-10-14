@@ -50,6 +50,7 @@ export class CriarFuncionarioAdmEmMassaUsecase {
           primeiroNome: cadastrar.primeiroNome,
           turno: cadastrar.turno,
           ultimoNome: cadastrar.ultimoNome,
+          empresa: cadastrar.empresa,
         });
         await this.identityUserRepository.addUser({
           centerId,
@@ -60,6 +61,7 @@ export class CriarFuncionarioAdmEmMassaUsecase {
           primeiroNome: cadastrar.primeiroNome,
           turno: cadastrar.turno,
           ultimoNome: cadastrar.ultimoNome,
+          empresa: cadastrar.empresa,
         });
       }),
     );

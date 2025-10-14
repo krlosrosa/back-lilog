@@ -8,6 +8,7 @@ export const CriarFuncionarioAdmSchemaEmMassa = z.array(
     primeiroNome: z.string(),
     ultimoNome: z.string(),
     turno: z.string(),
+    empresa: z.string(),
   }),
 );
 

@@ -5,6 +5,7 @@ export const UserSchema = z.object({
   id: z.string(),
   name: z.string(),
   turno: z.string(),
+  empresa: z.string(),
 });
 export const CriarFuncionariosEmMassaSchema = z.object({
   centerId: z.string(),
