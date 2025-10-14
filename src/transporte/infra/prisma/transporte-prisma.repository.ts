@@ -17,7 +17,12 @@ export class TransportePrismaRepository implements ITransporteRepository {
     await this.prisma.$transaction(
       async (tx) => {
         await tx.transporte.createMany({
-          data: transporte,
+          data: transporte.map((item) => {
+            return {
+              ...item,
+              dataExpedicao: item.dataExpedicao.toISOString(),
+            };
+          }),
         });
       },
       {

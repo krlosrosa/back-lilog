@@ -374,10 +374,10 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
     processo: string,
   ): Promise<DemandasNaoIniciadasZodDto> {
     const { startOfDay, endOfDay } = getStartAndEndOfDay(new Date(data));
-
     const resultado = await this.prisma.palete.findMany({
       where: {
         tipoProcesso: processo as TipoProcesso,
+        status: 'NAO_INICIADO',
         transporte: {
           centerId,
           dataExpedicao: {
@@ -386,12 +386,16 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
           },
         },
       },
+      include: {
+        transporte: true,
+      },
     });
     return resultado.map((item) => {
       return {
         ...item,
         criadoEm: item.criadoEm.toISOString(),
         atualizadoEm: item.atualizadoEm.toISOString(),
+        dataExpedicao: item.transporte.dataExpedicao.toISOString(),
       };
     });
   }

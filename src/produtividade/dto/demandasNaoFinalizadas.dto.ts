@@ -18,6 +18,7 @@ export const demandasNaoIniciadas = z.array(
     demandaId: z.number().nullable(),
     validado: z.boolean(),
     criadoPorId: z.string(),
+    dataExpedicao: z.string(),
   }),
 );
 
