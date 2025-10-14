@@ -68,6 +68,7 @@ export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
       where: {
         centerId: params.centerId,
         processo: params.processo as TipoProcesso,
+        empresa: params.empresa,
         dataRegistro: {
           gte: startOfDay,
           lte: endOfDay,

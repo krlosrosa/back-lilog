@@ -18,6 +18,7 @@ export class AtualizarDashBoardCentroUsecase {
         turno: demanda.turno,
         dataRegistro: demanda.dataRegistro,
         cluster: demanda.cluster,
+        empresa: demanda.empresa,
       });
     if (!dashboard) {
       const dashCenter = DashCenterEntity.create({
