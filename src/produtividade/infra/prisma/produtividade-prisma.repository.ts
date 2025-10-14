@@ -15,6 +15,7 @@ import {
 } from 'src/produtividade/dto/overViewProdutividade.dto';
 import { getStartAndEndOfDay } from 'src/_shared/utils/getStartAndEndOfDay';
 import { TipoProcesso } from '@prisma/client';
+import { DemandasNaoIniciadasZodDto } from 'src/produtividade/dto/demandasNaoFinalizadas.dto';
 
 @Injectable()
 export class ProdutividadePrismaRepository implements IProdutividadeRepository {
@@ -365,5 +366,33 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
         dataRegistro: demanda.paletes[0].transporte.dataExpedicao.toISOString(),
       }),
     );
+  }
+
+  async demandasNaoFinalizadas(
+    centerId: string,
+    data: string,
+    processo: string,
+  ): Promise<DemandasNaoIniciadasZodDto> {
+    const { startOfDay, endOfDay } = getStartAndEndOfDay(new Date(data));
+
+    const resultado = await this.prisma.palete.findMany({
+      where: {
+        tipoProcesso: processo as TipoProcesso,
+        transporte: {
+          centerId,
+          dataExpedicao: {
+            gte: startOfDay,
+            lte: endOfDay,
+          },
+        },
+      },
+    });
+    return resultado.map((item) => {
+      return {
+        ...item,
+        criadoEm: item.criadoEm.toISOString(),
+        atualizadoEm: item.atualizadoEm.toISOString(),
+      };
+    });
   }
 }

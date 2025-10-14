@@ -5,6 +5,7 @@ import {
   OverViewProdutividadeResponseZodDto,
   OverViewProdutividadeZodDto,
 } from 'src/produtividade/dto/overViewProdutividade.dto';
+import { DemandasNaoIniciadasZodDto } from 'src/produtividade/dto/demandasNaoFinalizadas.dto';
 
 export interface IProdutividadeRepository {
   create(
@@ -22,4 +23,9 @@ export interface IProdutividadeRepository {
   ): Promise<OverViewProdutividadeResponseZodDto>;
   buscarInfoDemanda(demandaId: number): Promise<DemandaEntity | null>;
   infoDemandaByUser(userId, centerId): Promise<DemandaEntity[]>;
+  demandasNaoFinalizadas(
+    centerId: string,
+    data: string,
+    processo: string,
+  ): Promise<DemandasNaoIniciadasZodDto>;
 }

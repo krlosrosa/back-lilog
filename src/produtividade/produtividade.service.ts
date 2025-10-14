@@ -15,6 +15,7 @@ import { BuscarProdutividadeUsecase } from './application/usecases/buscarProduti
 import { OverViewProdutividadeZodDto } from './dto/overViewProdutividade.dto';
 import { OverViewUsecase } from './application/usecases/overView.usecase';
 import { BuscarInfoDemandaUsecase } from './application/usecases/buscarInfoDemanda.usecase';
+import { DemandasNaoFinalizadasUseCase } from './application/usecases/buscarDemandasNaoFinalizadas';
 
 @Injectable()
 export class ProdutividadeService {
@@ -39,6 +40,8 @@ export class ProdutividadeService {
     private readonly overViewProdutividadeUsecase: OverViewUsecase,
     @Inject(BuscarInfoDemandaUsecase)
     private readonly buscarInfoDemandaUsecase: BuscarInfoDemandaUsecase,
+    @Inject(DemandasNaoFinalizadasUseCase)
+    private readonly demandasNaoFinalizadasUseCase: DemandasNaoFinalizadasUseCase,
   ) {}
 
   iniciarProdutividade(
@@ -88,5 +91,9 @@ export class ProdutividadeService {
 
   buscarInfoDemanda(paleteId: string) {
     return this.buscarInfoDemandaUsecase.execute(paleteId);
+  }
+
+  demandasNaoFinalizadas(centerId: string, data: string, processo: string) {
+    return this.demandasNaoFinalizadasUseCase.execute(centerId, data, processo);
   }
 }

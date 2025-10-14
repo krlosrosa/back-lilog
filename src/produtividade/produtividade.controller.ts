@@ -26,6 +26,8 @@ import { AddPausaIndividualDto } from './dto/addPausaIndividual.dto';
 import { AddPauseGeralDto } from './dto/addPauseGeral.dto';
 import { FinalizarPauseGeralDto } from './dto/finalizarPauseGeral.dto';
 import { BuscarProdutividadeZodDto } from './dto/buscarProdutividade.dto';
+import { ZodResponse } from 'nestjs-zod';
+import { DemandasNaoIniciadasZodDto } from './dto/demandasNaoFinalizadas.dto';
 
 @UseGuards(AuthGuard)
 @ApiTags('Produtividade')
@@ -149,5 +151,24 @@ export class ProdutividadeController {
       ...command,
       centerId,
     });
+  }
+
+  @ApiOperation({
+    summary: 'ListarPaletesEmAberto',
+    operationId: 'listarPaletesEmAberto',
+  })
+  @ZodResponse({ type: DemandasNaoIniciadasZodDto, status: 200 })
+  @ApiCommonErrors()
+  @Get('nao-finalizadas/:centerId/:data/:processo')
+  async listarPaletesEmAberto(
+    @Param('centerId') centerId: string,
+    @Param('data') data: string,
+    @Param('processo') processo: string,
+  ) {
+    return this.produtividadeService.demandasNaoFinalizadas(
+      centerId,
+      data,
+      processo,
+    );
   }
 }

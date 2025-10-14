@@ -17,6 +17,7 @@ import { ProdutividadeResolver } from './produtividade.resolver';
 import { OverViewUsecase } from './application/usecases/overView.usecase';
 import { BuscarInfoDemandaUsecase } from './application/usecases/buscarInfoDemanda.usecase';
 import { RulesPrismaRepository } from 'src/rules/infra/rules.prisma';
+import { DemandasNaoFinalizadasUseCase } from './application/usecases/buscarDemandasNaoFinalizadas';
 
 @Module({
   controllers: [ProdutividadeController],
@@ -32,6 +33,7 @@ import { RulesPrismaRepository } from 'src/rules/infra/rules.prisma';
     BuscarProdutividadeUsecase,
     OverViewUsecase,
     BuscarInfoDemandaUsecase,
+    DemandasNaoFinalizadasUseCase,
     {
       provide: 'IProdutividadeRepository',
       useClass: ProdutividadePrismaRepository,
