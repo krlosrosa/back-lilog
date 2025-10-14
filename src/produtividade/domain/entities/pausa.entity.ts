@@ -23,6 +23,15 @@ export class PausaEntity {
     this._fim = new Date();
   }
 
+  public intervaloDePausa(): number {
+    const inicio = this._inicio;
+    const fim = this?._fim;
+    if (fim) {
+      return fim.getTime() - inicio.getTime();
+    }
+    return 0;
+  }
+
   get id(): number {
     return this._id;
   }
