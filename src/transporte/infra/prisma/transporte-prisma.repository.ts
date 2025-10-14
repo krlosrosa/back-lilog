@@ -20,7 +20,7 @@ export class TransportePrismaRepository implements ITransporteRepository {
           data: transporte.map((item) => {
             return {
               ...item,
-              dataExpedicao: item.dataExpedicao.toISOString(),
+              dataExpedicao: item.dataExpedicao,
             };
           }),
         });
