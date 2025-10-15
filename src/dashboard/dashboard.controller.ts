@@ -18,6 +18,9 @@ import { DashUmCentroUsecase } from './application/dashUmCentro.usecase';
 import { DashUmCentrosZodDto } from './dtos/dashUmCentro.dto';
 import { BuscarAnomaliaPorCentroUsecase } from './application/buscarAnomaliasPorCentro.usecase';
 import { AnomaliaPorCentroZodDto } from './dtos/anomaliaPorCentro.dto';
+import { OverViewAcompanhamentoUsecase } from './application/overViewAcompanhamento.usecase';
+import { DashBoardDiaPorCentrodtoZodDto } from './dtos/dashBoardDiaPorCentro.dto';
+import { ZodResponse } from 'nestjs-zod';
 
 // @UseGuards(AuthGuard)
 @ApiTags('Dashboard')
@@ -31,6 +34,8 @@ export class DashboardController {
     private readonly dashUmCentroUsecase: DashUmCentroUsecase,
     @Inject(BuscarAnomaliaPorCentroUsecase)
     private readonly buscarAnomaliaPorCentroUsecase: BuscarAnomaliaPorCentroUsecase,
+    @Inject(OverViewAcompanhamentoUsecase)
+    private readonly overView: OverViewAcompanhamentoUsecase,
   ) {}
 
   @ApiOperation({
@@ -91,5 +96,23 @@ export class DashboardController {
       dataFim,
       centerId,
     );
+  }
+
+  @ApiOperation({
+    summary: 'OverViewPorDia',
+    operationId: 'overViewDia',
+  })
+  @ZodResponse({
+    type: DashBoardDiaPorCentrodtoZodDto,
+    status: 200,
+  })
+  @ApiCommonErrors()
+  @Get('overview-por-centro/:centerId/:data/:processo')
+  async overViewPorDia(
+    @Param('centerId') centerId: string,
+    @Param('data') data: string,
+    @Param('processo') processo: string,
+  ): Promise<DashBoardDiaPorCentrodtoZodDto> {
+    return this.overView.execute(centerId, data, processo);
   }
 }

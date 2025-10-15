@@ -399,4 +399,46 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
       };
     });
   }
+
+  async findDemandasByCenter(
+    centerId: string,
+    data: string,
+    processo: string,
+  ): Promise<DemandaEntity[]> {
+    const { startOfDay, endOfDay } = getStartAndEndOfDay(new Date(data));
+
+    const demandas = await this.prisma.demanda.findMany({
+      where: {
+        centerId,
+        processo: processo as TipoProcesso,
+        paletes: {
+          some: {
+            transporte: {
+              dataExpedicao: {
+                gte: startOfDay,
+                lte: endOfDay,
+              },
+            },
+          },
+        },
+      },
+      include: {
+        paletes: {
+          include: {
+            transporte: true,
+          },
+        },
+        pausas: true,
+        funcionario: true,
+        center: true,
+      },
+    });
+
+    return demandas.map((demanda) =>
+      DemandaMapper.fromPrismaToEntity({
+        ...demanda,
+        dataRegistro: new Date().toISOString(),
+      }),
+    );
+  }
 }

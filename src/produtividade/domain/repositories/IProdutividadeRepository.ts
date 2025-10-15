@@ -28,4 +28,9 @@ export interface IProdutividadeRepository {
     data: string,
     processo: string,
   ): Promise<DemandasNaoIniciadasZodDto>;
+  findDemandasByCenter(
+    centerId: string,
+    date: string,
+    processo: string,
+  ): Promise<DemandaEntity[]>;
 }
