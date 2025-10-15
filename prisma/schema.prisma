@@ -141,6 +141,9 @@ model Transporte {
   cadastradoPorId        String
   dataExpedicao          DateTime                    @db.Timestamp(6)
   centerId               String
+  separacao              StatusPalete                 @default(NAO_INICIADO)
+  conferencia            StatusPalete                 @default(NAO_INICIADO)
+  carregamento           StatusPalete                 @default(NAO_INICIADO)
   obs                    String?
   prioridade             Int                         @default(0)
   cortesMercadoria       CorteMercadoria[]
@@ -471,7 +474,6 @@ model RulesEngines {
   center Center @relation(fields: [centerId], references: [centerId])
   enabled Boolean @default(true)
   conditions Json
-
   createdBy String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -542,10 +544,15 @@ enum TipoQuebraPalete {
 
 enum TipoEvento {
   CRIACAO_TRANSPORTE
-  ATRIBUICAO_PALLET
-  FINALIZACAO_DEMANDA
-  LIBERACAO_CONFERENCIA
-  OUTRO
+  INICIO_SEPARACAO
+  TERMINO_SEPARACAO
+  INICIO_CONFERENCIA
+  TERMINO_CONFERENCIA
+  INICIO_CARREGAMENTO
+  TERMINO_CARREGAMENTO
+  CORTE_PRODUTO
+  FATURADO
+  LIBERADO_PORTARIA
 }
 
 enum MotivoCorteMercadoria {

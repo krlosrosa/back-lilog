@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { StatusPalete, TipoProcesso } from '@prisma/client';
 import { PrismaService } from 'src/_shared/infra/prisma/prisma.service';
 import { getStartAndEndOfDay } from 'src/_shared/utils/getStartAndEndOfDay';
-import { StatusPalete } from 'src/produtividade/enums/produtividade.enums';
 import { InputPaleteInfraDto } from 'src/transporte/domain/dtos/inputPalete.dto';
 import { InputTransportDto } from 'src/transporte/domain/dtos/inputTransport.dto';
-import { ITransporteRepository } from 'src/transporte/domain/repositories/ITransporte.repository';
+import {
+  ITransporteRepository,
+  PaleteComInfoTransporte,
+} from 'src/transporte/domain/repositories/ITransporte.repository';
 import { TransporteResponseDto } from 'src/transporte/dto/transporte.dto';
 import { StatusTransporte } from 'src/transporte/enums/transport.enum';
 import { removeDuplicadosPorId } from 'src/utils/removerDuplicadas';
@@ -176,5 +179,49 @@ export class TransportePrismaRepository implements ITransporteRepository {
         (item) => item.tipoImpressao === 'SEPARACAO',
       ).length,
     }));
+  }
+
+  async listarTransportesDeUmaDemanda(
+    demandaId: number,
+    tipo: string,
+  ): Promise<string[]> {
+    const transportes = await this.prisma.palete.findMany({
+      where: { demandaId, tipoProcesso: tipo as TipoProcesso },
+    });
+    return transportes.map((transporte) => transporte.transporteId);
+  }
+
+  async buscarPaletesPorTransportes(
+    transportesIds: string[],
+  ): Promise<PaleteComInfoTransporte[]> {
+    const response = await this.prisma.palete.findMany({
+      where: {
+        transporteId: {
+          in: transportesIds,
+        },
+      },
+      include: {
+        transporte: true,
+      },
+    });
+    return response.map((palete) => ({
+      paleteStatus: palete.status,
+      transporteId: palete.transporteId,
+      separacaoStatus: palete.transporte.separacao,
+      conferenciaStatus: palete.transporte.conferencia,
+      carregamentoStatus: palete.transporte.carregamento,
+    }));
+  }
+
+  async atualizarTransporteSeparacao(
+    transporteId: string,
+    status: string,
+  ): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      await tx.transporte.update({
+        where: { numeroTransporte: transporteId },
+        data: { separacao: status as StatusPalete },
+      });
+    });
   }
 }

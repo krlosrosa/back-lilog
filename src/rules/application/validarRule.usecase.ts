@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { Engine } from 'json-rules-engine';
 import { type IRulesRepository } from '../domain/repositories/IRules.reposity';
+import { convertQueryBuilderToRulesEngine } from '../mappers/rules.mapper';
 
 @Injectable()
 export class ValidarRuleUsecase {
@@ -10,10 +11,9 @@ export class ValidarRuleUsecase {
     private readonly rulesRepository: IRulesRepository,
   ) {}
   async execute(centerId: string): Promise<string> {
-    const rule = await this.rulesRepository.findRulesByCenterId(centerId);
-
     const engine = new Engine();
-    engine.addRule({
+    {
+      /*engine.addRule({
       conditions: rule.conditions,
       event: {
         type: 'validacaoTempoMinimo',
@@ -22,7 +22,8 @@ export class ValidarRuleUsecase {
         },
       },
     });
-
+*/
+    }
     const facts = {
       produtividadeMinima: 10,
       statusDemanda: 'PENDENTE',

@@ -3,6 +3,8 @@ import { RulesService } from './rules.service';
 import { CreateRuleDto } from './dtos/createRule.dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiCommonErrors } from 'src/_shared/decorators/returnSwagger';
+import { ZodResponse } from 'nestjs-zod';
+import { ListRolesEngine } from './dtos/listRulesDto';
 
 @ApiTags('Rules')
 @Controller('rules')
@@ -36,5 +38,19 @@ export class RulesController {
   @Get('validate/:centerId')
   validateRule(@Param('centerId') centerId: string) {
     return this.rulesService.validarRule(centerId);
+  }
+
+  @ApiOperation({
+    summary: 'listar Regras do centro',
+    operationId: 'listarRulesPorCentro',
+  })
+  @ZodResponse({
+    type: ListRolesEngine,
+    status: 200,
+  })
+  @ApiCommonErrors()
+  @Get('listar-rules/:centerId')
+  listarRules(@Param('centerId') centerId: string) {
+    return this.rulesService.findRulesByCenter(centerId);
   }
 }

@@ -12,6 +12,8 @@ import { BuscarItensPorTransporteUsecase } from './application/buscarItensPorTra
 import { BuscarTransportePorDataUsecase } from './application/buscarTransportePorData';
 import { TransporteResolver } from './transporte.resolver';
 import { ListarTransportesComDemandaIniciada } from './application/listarTransportesComDemandaIniciada';
+import { TransporteEventService } from './transporte.event.service';
+import { AtualizarSeparacaoUsecase } from './application/events/atualizarSeparacao.usecase';
 
 @Module({
   providers: [
@@ -24,6 +26,8 @@ import { ListarTransportesComDemandaIniciada } from './application/listarTranspo
     BuscarItensPorTransporteUsecase,
     BuscarTransportePorDataUsecase,
     ListarTransportesComDemandaIniciada,
+    TransporteEventService,
+    AtualizarSeparacaoUsecase,
     {
       provide: 'ITransporteRepository',
       useClass: TransportePrismaRepository,

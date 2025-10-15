@@ -178,13 +178,21 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
   }
 
   async finalizarDemanda(demanda: DemandaEntity): Promise<void> {
-    await this.prisma.demanda.update({
-      where: { id: demanda.id },
-      data: {
-        status: demanda.status,
-        fim: demanda.fim,
-        obs: demanda.obs,
-      },
+    await this.prisma.$transaction(async (tx) => {
+      await tx.demanda.update({
+        where: { id: demanda.id },
+        data: {
+          status: demanda.status,
+          fim: demanda.fim,
+          obs: demanda.obs,
+        },
+      });
+      await tx.palete.updateMany({
+        where: { demandaId: demanda.id },
+        data: {
+          status: StatusPalete.CONCLUIDO,
+        },
+      });
     });
   }
 

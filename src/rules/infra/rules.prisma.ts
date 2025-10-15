@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/_shared/infra/prisma/prisma.service';
 import { IRulesRepository } from '../domain/repositories/IRules.reposity';
 import { CreateRuleDto } from '../dtos/createRule.dto';
+import { ListRolesEngine } from '../dtos/listRulesDto';
 
 @Injectable()
 export class RulesPrismaRepository implements IRulesRepository {
@@ -19,19 +20,10 @@ export class RulesPrismaRepository implements IRulesRepository {
     });
   }
 
-  async findRulesByCenterId(centerId: string): Promise<any> {
-    const rules = await this.prisma.rulesEngines.findFirst({
+  async findRulesByCenterId(centerId: string): Promise<ListRolesEngine> {
+    const rules = await this.prisma.rulesEngines.findMany({
       where: { centerId },
     });
-
-    return rules
-      ? {
-          id: rules.id,
-          name: rules.name,
-          description: rules.description,
-          enabled: rules.enabled,
-          conditions: rules.conditions,
-        }
-      : null;
+    return rules;
   }
 }

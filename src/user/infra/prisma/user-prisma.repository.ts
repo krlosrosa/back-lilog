@@ -26,6 +26,7 @@ export class UserPrismaRepository implements IUserRepository {
   async criarNovoFuncionario(
     command: CriarNovoFuncionarioZodDto,
   ): Promise<CriarNovoFuncionarioZodDto> {
+    console.log({infra: command})
     const funcionario = await this.prisma.user.create({
       data: {
         name: command.nome,
@@ -139,7 +140,7 @@ export class UserPrismaRepository implements IUserRepository {
     const user = await this.prisma.user.findFirst({
       where: {
         assignedCenters: {
-          every: {
+          some: {
             userId: id,
             centerId,
           },
