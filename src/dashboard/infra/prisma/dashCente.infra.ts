@@ -315,6 +315,7 @@ export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
     dataInicio: string,
     dataFim: string,
     centerId: string,
+    processo: string,
   ): Promise<DashUmCentrosZodDto> {
     const { startOfDay: startOfDayInicio } = getStartAndEndOfDay(
       new Date(dataInicio),
@@ -332,6 +333,7 @@ export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
         where: {
           dataRegistro: { gte: startOfDayInicio, lte: endOfDayFim },
           centerId: centerId,
+          processo: processo as TipoProcessoPrisma,
         },
         _sum: {
           totalCaixas: true,
@@ -345,6 +347,7 @@ export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
           where: {
             dataRegistro: { gte: startOfDayInicio, lte: endOfDayFim },
             centerId: centerId,
+            processo: processo as TipoProcessoPrisma,
           },
           include: {
             center: true,
@@ -357,6 +360,7 @@ export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
           where: {
             dataRegistro: { gte: startOfDayInicio, lte: endOfDayFim },
             centerId: centerId,
+            processo: processo as TipoProcessoPrisma,
           },
           include: {
             center: true,
@@ -369,6 +373,7 @@ export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
           where: {
             dataRegistro: { gte: startOfDayInicio, lte: endOfDayFim },
             centerId: centerId,
+            processo: processo as TipoProcessoPrisma,
           },
           _sum: {
             totalCaixas: true,
@@ -383,6 +388,7 @@ export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
           where: {
             dataRegistro: { gte: startOfDayInicio, lte: endOfDayFim },
             centerId: centerId,
+            processo: processo as TipoProcessoPrisma,
           },
           _sum: {
             totalCaixas: true,

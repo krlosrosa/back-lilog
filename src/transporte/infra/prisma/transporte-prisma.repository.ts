@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { StatusPalete, TipoProcesso } from '@prisma/client';
+import { StatusPaleteNest } from 'src/_shared/enums/statusPalete.enum';
 import { PrismaService } from 'src/_shared/infra/prisma/prisma.service';
 import { getStartAndEndOfDay } from 'src/_shared/utils/getStartAndEndOfDay';
 import { InputPaleteInfraDto } from 'src/transporte/domain/dtos/inputPalete.dto';
@@ -112,6 +113,9 @@ export class TransportePrismaRepository implements ITransporteRepository {
       nomeTransportadora: transporte.nomeTransportadora,
       placa: transporte.placa,
       cadastradoPorId: transporte.cadastradoPorId,
+      carregamento: transporte.carregamento as StatusPaleteNest,
+      separacao: transporte.separacao as StatusPaleteNest,
+      conferencia: transporte.conferencia as StatusPaleteNest,
       prioridade: transporte.prioridade,
       obs: transporte.obs ?? '',
       qtdImpressaoCarregamento: transporte.historicoImpressaoMapa.filter(
@@ -171,6 +175,9 @@ export class TransportePrismaRepository implements ITransporteRepository {
       cadastradoPorId: transporte.cadastradoPorId,
       prioridade: transporte.prioridade,
       obs: transporte.obs ?? '',
+      carregamento: transporte.carregamento as StatusPaleteNest,
+      separacao: transporte.separacao as StatusPaleteNest,
+      conferencia: transporte.conferencia as StatusPaleteNest,
       temCortes: transporte.cortesMercadoria.length > 0,
       qtdImpressaoCarregamento: transporte.historicoImpressaoMapa.filter(
         (item) => item.tipoImpressao === 'CARREGAMENTO',

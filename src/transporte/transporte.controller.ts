@@ -23,6 +23,7 @@ import { ItensDoTransporteZodDto } from './dto/itensDoTransporte.dtos';
 import { ZodResponse } from 'nestjs-zod';
 import { PaleteInputZodDto } from './dto/adicionarPalete';
 import { TransportInfoZodDto } from './dto/adicionarTransporte.dto';
+import { TransporteResponseZodDto } from './dto/transporte.dto';
 
 @UseGuards(AuthGuard)
 @ApiTags('Transporte')
@@ -130,10 +131,13 @@ export class TransporteController {
     return this.transporteService.buscarItensPorTransporte(transporteId);
   }
 
-  @ApiOperation({ summary: 'Busca os transportes por data' })
-  @ApiResponse({
+  @ApiOperation({
+    summary: 'Busca os transportes por data',
+    operationId: 'buscarTransportesPorCentro',
+  })
+  @ZodResponse({
+    type: [TransporteResponseZodDto],
     status: 200,
-    description: 'Transportes por data buscados com sucesso',
   })
   @ApiCommonErrors()
   @Get('buscar-transporte-por-data/:centerId')

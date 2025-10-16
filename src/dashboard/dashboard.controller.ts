@@ -66,13 +66,19 @@ export class DashboardController {
     type: DashUmCentrosZodDto,
   })
   @ApiCommonErrors()
-  @Get('dash/:centerId')
+  @Get('dash/:centerId/:processo')
   async dashUmCentros(
     @Param('centerId') centerId: string,
+    @Param('processo') processo: string,
     @Query('dataInicio') dataInicio: string,
     @Query('dataFim') dataFim: string,
   ): Promise<DashUmCentrosZodDto> {
-    return this.dashUmCentroUsecase.execute(dataInicio, dataFim, centerId);
+    return this.dashUmCentroUsecase.execute(
+      dataInicio,
+      dataFim,
+      centerId,
+      processo,
+    );
   }
 
   @ApiOperation({

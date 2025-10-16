@@ -13,11 +13,13 @@ export class DashUmCentroUsecase {
     dataInicio: string,
     dataFim: string,
     centerId: string,
+    processo: string,
   ): Promise<DashUmCentrosZodDto> {
     return this.dashboardRepository.dashIndividualCentro(
       dataInicio,
       dataFim,
       centerId,
+      processo,
     );
   }
 }

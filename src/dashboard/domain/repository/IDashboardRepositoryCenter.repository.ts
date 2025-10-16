@@ -19,6 +19,7 @@ export interface IDashboardRepositoryCenter {
     dataInicio: string,
     dataFim: string,
     centerId: string,
+    processo: string,
   ): Promise<DashUmCentrosZodDto>;
   buscarAnomaliaPorCentro(
     dataInicio: string,
