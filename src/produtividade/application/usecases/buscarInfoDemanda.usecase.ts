@@ -25,8 +25,6 @@ export class BuscarInfoDemandaUsecase {
       throw new NotFoundException('Demanda não encontrada');
     }
 
-    console.log({ demanda: demanda });
-
     return {
       id: demanda.id,
       processo: demanda.processo,

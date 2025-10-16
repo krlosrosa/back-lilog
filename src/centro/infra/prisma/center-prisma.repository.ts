@@ -38,7 +38,6 @@ export class CenterPrismaRepository implements ICenterRepository {
     empresa: string,
     atribuidoPorId: string,
   ): Promise<boolean> {
-    console.log({ atribuidoPorId });
     await this.prisma.configuracaoImpressaoMapa.upsert({
       where: {
         centerId_empresa: {

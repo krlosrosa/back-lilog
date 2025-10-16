@@ -57,7 +57,6 @@ export class ProdutividadeResolver {
         obs: produtividade.obs ?? '',
       };
     });
-    console.log(produtividadeResponse);
     return produtividadeResponse;
   }
 

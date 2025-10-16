@@ -59,7 +59,6 @@ export class KeycloakService implements IIdentityUserRepository {
       throw new Error('User not found');
     }
     const user = users[0];
-    console.log({ pass: newPassword });
     await kcAdminClient.users.resetPassword({
       id: user.id as string,
       credential: {

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { DemandaEntity } from 'src/produtividade/domain/entities/demanda.entity';
 import { AtualizarSeparacaoUsecase } from './application/events/atualizarSeparacao.usecase';
+import { type UpdateTransporteDto } from './dto/updateTransporte.dto';
 
 @Injectable()
 export class TransporteEventService {
@@ -10,9 +10,8 @@ export class TransporteEventService {
     private readonly atualizarSeparacao: AtualizarSeparacaoUsecase,
   ) {}
 
-  @OnEvent('produtividade.finalizada')
-  @OnEvent('produtividade.iniciada')
-  async createAnomalia(payload: DemandaEntity) {
-    await this.atualizarSeparacao.execute(payload.id);
+  @OnEvent('produtividade.updateTransporte')
+  async createAnomalia(payload: UpdateTransporteDto) {
+    return this.atualizarSeparacao.execute(payload);
   }
 }

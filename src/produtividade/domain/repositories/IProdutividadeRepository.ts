@@ -11,7 +11,7 @@ export interface IProdutividadeRepository {
   create(
     produtividade: CreateProdutividadeDto,
     cadastradoPorId: string,
-  ): Promise<boolean>;
+  ): Promise<number>;
   findByPalletId(palletId: string): Promise<DemandaEntity | null>;
   deletarDemanda(demandaId: number): Promise<void>;
   finalizarDemanda(demanda: DemandaEntity): Promise<void>;

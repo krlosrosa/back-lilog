@@ -26,9 +26,19 @@ export interface ITransporteRepository {
   ): Promise<string[]>;
   buscarPaletesPorTransportes(
     transportesIds: string[],
+    processo: string,
   ): Promise<PaleteComInfoTransporte[]>;
   atualizarTransporteSeparacao(
     transporteId: string,
     status: string,
   ): Promise<void>;
+  atualizarTransporteConferencia(
+    transporteId: string,
+    status: string,
+  ): Promise<void>;
+  atualizarTransporteCarregamento(
+    transporteId: string,
+    status: string,
+  ): Promise<void>;
+  buscarTipoPorDemandaId(id: number): Promise<string>;
 }

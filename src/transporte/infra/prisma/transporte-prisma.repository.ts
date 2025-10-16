@@ -185,20 +185,24 @@ export class TransportePrismaRepository implements ITransporteRepository {
     demandaId: number,
     tipo: string,
   ): Promise<string[]> {
+    console.log(tipo);
     const transportes = await this.prisma.palete.findMany({
       where: { demandaId, tipoProcesso: tipo as TipoProcesso },
     });
+    console.log({ transportes });
     return transportes.map((transporte) => transporte.transporteId);
   }
 
   async buscarPaletesPorTransportes(
     transportesIds: string[],
+    processo: string,
   ): Promise<PaleteComInfoTransporte[]> {
     const response = await this.prisma.palete.findMany({
       where: {
         transporteId: {
           in: transportesIds,
         },
+        tipoProcesso: processo as TipoProcesso,
       },
       include: {
         transporte: true,
@@ -223,5 +227,41 @@ export class TransportePrismaRepository implements ITransporteRepository {
         data: { separacao: status as StatusPalete },
       });
     });
+  }
+
+  async atualizarTransporteConferencia(
+    transporteId: string,
+    status: string,
+  ): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      await tx.transporte.update({
+        where: { numeroTransporte: transporteId },
+        data: { conferencia: status as StatusPalete },
+      });
+    });
+  }
+
+  async atualizarTransporteCarregamento(
+    transporteId: string,
+    status: string,
+  ): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      await tx.transporte.update({
+        where: { numeroTransporte: transporteId },
+        data: { carregamento: status as StatusPalete },
+      });
+    });
+  }
+
+  async buscarTipoPorDemandaId(id: number): Promise<string> {
+    const tipo = await this.prisma.demanda.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        paletes: true,
+      },
+    });
+    return tipo?.paletes[0].tipoProcesso || '';
   }
 }

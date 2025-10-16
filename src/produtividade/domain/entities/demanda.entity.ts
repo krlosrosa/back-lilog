@@ -62,7 +62,6 @@ export class DemandaEntity {
   }
 
   public validarPausa(): boolean {
-    console.log(this._pausas);
     const pausaAberta = this._pausas?.filter(
       (pausa) => pausa.fim === null || pausa.fim === undefined,
     );
@@ -75,8 +74,6 @@ export class DemandaEntity {
       const motivo = pausaAberta.every(
         (pausa) => pausa.motivo === 'FALTA_PRODUTO',
       );
-
-      console.log({ abertar: motivo });
 
       if (!motivo) {
         return false;

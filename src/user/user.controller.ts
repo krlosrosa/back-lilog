@@ -110,7 +110,6 @@ export class UserController {
   @ApiCommonErrors()
   @Post('criar-novo-funcionario')
   async criarNovoFuncionario(@Body() command: CriarNovoFuncionarioZodDtoT) {
-    console.log(command)
     return this.userService.criarNovoFuncionario(command);
   }
 

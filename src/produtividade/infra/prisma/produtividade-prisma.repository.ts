@@ -24,8 +24,8 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
   async create(
     produtividade: CreateProdutividadeDto,
     cadastradoPorId: string,
-  ): Promise<boolean> {
-    await this.prisma.$transaction(async (tx) => {
+  ): Promise<number> {
+    const demanda = await this.prisma.$transaction(async (tx) => {
       const { paletesIds, ...rest } = produtividade;
       const demanda = await tx.demanda.create({
         data: {
@@ -44,8 +44,10 @@ export class ProdutividadePrismaRepository implements IProdutividadeRepository {
           status: StatusPalete.EM_PROGRESSO,
         },
       });
+
+      return demanda.id;
     });
-    return true;
+    return demanda;
   }
 
   async buscarProdutividade(

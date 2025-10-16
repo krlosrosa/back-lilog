@@ -4,6 +4,7 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PaleteEntity } from 'src/produtividade/domain/entities/palete.entity';
 import { type IPaleteRepository } from 'src/produtividade/domain/repositories/IPaleteRepository';
 import { type IProdutividadeRepository } from 'src/produtividade/domain/repositories/IProdutividadeRepository';
@@ -12,6 +13,7 @@ import {
   TipoProcesso,
 } from 'src/produtividade/enums/produtividade.enums';
 import { type IRulesRepository } from 'src/rules/domain/repositories/IRules.reposity';
+import { UpdateTransporteDto } from 'src/transporte/dto/updateTransporte.dto';
 import { type IUserRepository } from 'src/user/domain/repositories/IUserRepository';
 
 export type InitiatePickingCommand = {
@@ -34,6 +36,7 @@ export class IniciarProdutividadeUsecase {
     private readonly paleteRepository: IPaleteRepository,
     @Inject('IProdutividadeRepository')
     private readonly produtividadeRepository: IProdutividadeRepository,
+    private readonly eventEmitter: EventEmitter2,
     @Inject('IRulesRepository')
     private readonly rulesRepository: IRulesRepository,
   ) {}
@@ -55,6 +58,8 @@ export class IniciarProdutividadeUsecase {
       command.centerId,
     );
 
+    console.log({ processo: command.processo });
+
     if (funcDemandas) {
       for (const demanda of funcDemandas) {
         if (demanda.status === 'EM_PROGRESSO') {
@@ -75,7 +80,7 @@ export class IniciarProdutividadeUsecase {
       }
     }
 
-    await this.produtividadeRepository.create(
+    const demanda = await this.produtividadeRepository.create(
       {
         inicio: command.inicio,
         processo: paletes[0].processo,
@@ -87,6 +92,13 @@ export class IniciarProdutividadeUsecase {
       },
       command.cadastradoPorId,
     );
+
+    const notificar: UpdateTransporteDto = {
+      demanda: demanda,
+      processo: command.processo,
+      cadastrado: command.cadastradoPorId,
+    };
+    this.eventEmitter.emit('produtividade.updateTransporte', notificar);
     return Promise.resolve('OK');
   }
 

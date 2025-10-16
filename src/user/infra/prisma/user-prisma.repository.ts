@@ -26,7 +26,6 @@ export class UserPrismaRepository implements IUserRepository {
   async criarNovoFuncionario(
     command: CriarNovoFuncionarioZodDto,
   ): Promise<CriarNovoFuncionarioZodDto> {
-    console.log({infra: command})
     const funcionario = await this.prisma.user.create({
       data: {
         name: command.nome,

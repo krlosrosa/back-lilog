@@ -15,7 +15,7 @@ export class CriarNovoFuncionarioUsecase {
       command.id,
       command.centerId,
     );
-    console.log({user})
+
     if (user) {
       await this.userRepository.atribuirCentroAFuncionario({
         centerId: command.centerId,

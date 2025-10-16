@@ -37,8 +37,6 @@ export class CriarFuncionarioAdmEmMassaUsecase {
       userCadastrados?.some((item) => item.id === adm.id),
     );
 
-    console.log(comCadastroKeyCloak);
-
     await Promise.all(
       semCadastroKeyCloak.map(async (cadastrar) => {
         await this.userRepository.criarFuncionarioAdm({

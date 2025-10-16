@@ -7,6 +7,7 @@ import {
 import { type IProdutividadeRepository } from 'src/produtividade/domain/repositories/IProdutividadeRepository';
 import { StatusDemanda } from 'src/produtividade/enums/produtividade.enums';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UpdateTransporteDto } from 'src/transporte/dto/updateTransporte.dto';
 
 @Injectable()
 export class FinalizarProdutividadeUsecase {
@@ -31,6 +32,14 @@ export class FinalizarProdutividadeUsecase {
     demanda.finalizarDemanda(observacao);
 
     await this.produtividadeRepository.finalizarDemanda(demanda);
+
+    const notificar: UpdateTransporteDto = {
+      demanda: demanda.id,
+      processo: demanda.processo,
+      cadastrado: demanda.cadastradoPorId,
+    };
+
+    this.eventEmitter.emit('produtividade.updateTransporte', notificar);
     this.eventEmitter.emit('produtividade.finalizada', demanda);
   }
 }

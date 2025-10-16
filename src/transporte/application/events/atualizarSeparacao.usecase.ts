@@ -3,6 +3,7 @@ import {
   PaleteComInfoTransporte,
   type ITransporteRepository,
 } from 'src/transporte/domain/repositories/ITransporte.repository';
+import { UpdateTransporteDto } from 'src/transporte/dto/updateTransporte.dto';
 
 @Injectable()
 export class AtualizarSeparacaoUsecase {
@@ -11,14 +12,19 @@ export class AtualizarSeparacaoUsecase {
     private readonly transporteRepository: ITransporteRepository,
   ) {}
 
-  async execute(demandaId: number): Promise<void> {
+  async execute(info: UpdateTransporteDto): Promise<void> {
+    const tipoProcessoBanco =
+      await this.transporteRepository.buscarTipoPorDemandaId(info.demanda);
     const demandas =
       await this.transporteRepository.listarTransportesDeUmaDemanda(
-        demandaId,
-        'SEPARACAO',
+        info.demanda,
+        tipoProcessoBanco,
       );
-    const paletes =
-      await this.transporteRepository.buscarPaletesPorTransportes(demandas);
+
+    const paletes = await this.transporteRepository.buscarPaletesPorTransportes(
+      demandas,
+      tipoProcessoBanco,
+    );
 
     const paletesAgrupados = agruparPorTransporte(paletes);
 
@@ -29,16 +35,48 @@ export class AtualizarSeparacaoUsecase {
         return palete.paleteStatus === 'CONCLUIDO';
       });
       if (transporteFinalizado) {
-        if (paletesDoTransporte[0].separacaoStatus === 'CONCLUIDO') return;
-        return this.transporteRepository.atualizarTransporteSeparacao(
-          transporteId,
-          'CONCLUIDO',
-        );
+        console.log({ eventoDemanda: transporteFinalizado });
+        if (tipoProcessoBanco === 'SEPARACAO') {
+          if (paletesDoTransporte[0].separacaoStatus === 'CONCLUIDO') return;
+          return this.transporteRepository.atualizarTransporteSeparacao(
+            transporteId,
+            'CONCLUIDO',
+          );
+        }
+        if (tipoProcessoBanco === 'CONFERENCIA') {
+          if (paletesDoTransporte[0].conferenciaStatus === 'CONCLUIDO') return;
+          return this.transporteRepository.atualizarTransporteConferencia(
+            transporteId,
+            'CONCLUIDO',
+          );
+        }
+        if (tipoProcessoBanco === 'CARREGAMENTO') {
+          if (paletesDoTransporte[0].carregamentoStatus === 'CONCLUIDO') return;
+          return this.transporteRepository.atualizarTransporteCarregamento(
+            transporteId,
+            'CONCLUIDO',
+          );
+        }
       } else {
-        return this.transporteRepository.atualizarTransporteSeparacao(
-          transporteId,
-          'EM_PROGRESSO',
-        );
+        console.log(paletesDoTransporte);
+        if (tipoProcessoBanco === 'SEPARACAO') {
+          return this.transporteRepository.atualizarTransporteSeparacao(
+            transporteId,
+            'EM_PROGRESSO',
+          );
+        }
+        if (tipoProcessoBanco === 'CONFERENCIA') {
+          return this.transporteRepository.atualizarTransporteConferencia(
+            transporteId,
+            'EM_PROGRESSO',
+          );
+        }
+        if (tipoProcessoBanco === 'CARREGAMENTO') {
+          return this.transporteRepository.atualizarTransporteCarregamento(
+            transporteId,
+            'EM_PROGRESSO',
+          );
+        }
       }
     }
   }
