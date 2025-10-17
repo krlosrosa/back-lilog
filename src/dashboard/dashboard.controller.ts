@@ -23,6 +23,8 @@ import { DashBoardDiaPorCentrodtoZodDto } from './dtos/dashBoardDiaPorCentro.dto
 import { ZodResponse } from 'nestjs-zod';
 import { DashDaniloUsecase } from './application/dashDaniloProdutividade.useCase';
 import { DashDaniloProdutividadeZodDto } from './dtos/dashDaniloProdutividade.dto';
+import { DashDaniloPausasUsecase } from './application/dashDaniloPausas.useCase';
+import { DashDaniloPausaZodDto } from './dtos/dashDaniloPausas.dto';
 
 // @UseGuards(AuthGuard)
 @ApiTags('Dashboard')
@@ -40,6 +42,8 @@ export class DashboardController {
     private readonly overView: OverViewAcompanhamentoUsecase,
     @Inject(DashDaniloUsecase)
     private readonly dashDaniloDemanda: DashDaniloUsecase,
+    @Inject(DashDaniloPausasUsecase)
+    private readonly dashDaniloPausas: DashDaniloPausasUsecase,
   ) {}
 
   @ApiOperation({
@@ -143,5 +147,24 @@ export class DashboardController {
     @Param('dataFim') dataFim: string,
   ): Promise<DashDaniloProdutividadeZodDto> {
     return this.dashDaniloDemanda.execute(dataInicio, dataFim, centerId);
+  }
+
+  @ApiOperation({
+    summary: 'Dash Pausas Danilo',
+    operationId: 'dashDaniloPausas',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'DashPausasDanilo',
+    type: DashDaniloPausaZodDto,
+  })
+  @ApiCommonErrors()
+  @Get('demanda-pausas-danilo/:centerId/:dataInicio/:dataFim')
+  async dashInfoDaniloPausas(
+    @Param('centerId') centerId: string,
+    @Param('dataInicio') dataInicio: string,
+    @Param('dataFim') dataFim: string,
+  ): Promise<DashDaniloPausaZodDto> {
+    return this.dashDaniloPausas.execute(dataInicio, dataFim, centerId);
   }
 }

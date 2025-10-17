@@ -13,6 +13,7 @@ import { BuscarAnomaliaPorCentroUsecase } from './application/buscarAnomaliasPor
 import { OverViewAcompanhamentoUsecase } from './application/overViewAcompanhamento.usecase';
 import { ProdutividadePrismaRepository } from 'src/produtividade/infra/prisma/produtividade-prisma.repository';
 import { DashDaniloUsecase } from './application/dashDaniloProdutividade.useCase';
+import { DashDaniloPausasUsecase } from './application/dashDaniloPausas.useCase';
 
 @Module({
   controllers: [DashboardController],
@@ -26,6 +27,7 @@ import { DashDaniloUsecase } from './application/dashDaniloProdutividade.useCase
     BuscarAnomaliaPorCentroUsecase,
     OverViewAcompanhamentoUsecase,
     DashDaniloUsecase,
+    DashDaniloPausasUsecase,
     {
       provide: 'IDashboardRepository',
       useClass: DashCenterPrismaRepository,

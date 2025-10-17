@@ -16,6 +16,7 @@ import { DashUmCentrosZodDto } from 'src/dashboard/dtos/dashUmCentro.dto';
 import { AnomaliaPorCentroZodDto } from 'src/dashboard/dtos/anomaliaPorCentro.dto';
 import { DemandaEntity } from 'src/produtividade/domain/entities/demanda.entity';
 import { DemandaMapper } from 'src/produtividade/infra/mappers/demanda.mapper';
+import { DashDaniloPausaZodDto } from 'src/dashboard/dtos/dashDaniloPausas.dto';
 
 @Injectable()
 export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
@@ -610,5 +611,38 @@ export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
         dataRegistro: demanda.paletes[0].transporte.dataExpedicao.toISOString(),
       }),
     );
+  }
+
+  async dashDaniloPausas(
+    dataInicio: string,
+    dataFim: string,
+    centerId: string,
+  ): Promise<DashDaniloPausaZodDto> {
+    const { startOfDay } = getStartAndEndOfDay(new Date(dataInicio));
+    const { endOfDay } = getStartAndEndOfDay(new Date(dataFim));
+    const pausas = await this.prisma.pausa.findMany({
+      where: {
+        demanda: {
+          centerId,
+          paletes: {
+            some: {
+              transporte: {
+                dataExpedicao: {
+                  gte: startOfDay,
+                  lte: endOfDay,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    return pausas.map((pausa) => {
+      return {
+        ...pausa,
+        inicio: pausa.inicio.toISOString(),
+        fim: pausa?.fim?.toISOString() || null,
+      };
+    });
   }
 }
