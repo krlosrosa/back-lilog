@@ -4,6 +4,7 @@ import { StatusPorTransporteZodDto } from 'src/dashboard/dtos/statusPorTransport
 import { DashCentrosZodDto } from 'src/dashboard/dtos/dashCentros.dto';
 import { DashUmCentrosZodDto } from 'src/dashboard/dtos/dashUmCentro.dto';
 import { AnomaliaPorCentroZodDto } from 'src/dashboard/dtos/anomaliaPorCentro.dto';
+import { DemandaEntity } from 'src/produtividade/domain/entities/demanda.entity';
 
 export interface IDashboardRepositoryCenter {
   atualizarDashBoardCentro(dashCenter: DashCenterEntity): Promise<void>;
@@ -26,4 +27,9 @@ export interface IDashboardRepositoryCenter {
     dataFim: string,
     centerId: string,
   ): Promise<AnomaliaPorCentroZodDto>;
+  dashDaniloProdutividade(
+    dataInicio: string,
+    dataFim: string,
+    centerId: string,
+  ): Promise<DemandaEntity[]>;
 }

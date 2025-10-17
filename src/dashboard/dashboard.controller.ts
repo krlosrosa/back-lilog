@@ -21,6 +21,8 @@ import { AnomaliaPorCentroZodDto } from './dtos/anomaliaPorCentro.dto';
 import { OverViewAcompanhamentoUsecase } from './application/overViewAcompanhamento.usecase';
 import { DashBoardDiaPorCentrodtoZodDto } from './dtos/dashBoardDiaPorCentro.dto';
 import { ZodResponse } from 'nestjs-zod';
+import { DashDaniloUsecase } from './application/dashDaniloProdutividade.useCase';
+import { DashDaniloProdutividadeZodDto } from './dtos/dashDaniloProdutividade.dto';
 
 // @UseGuards(AuthGuard)
 @ApiTags('Dashboard')
@@ -36,6 +38,8 @@ export class DashboardController {
     private readonly buscarAnomaliaPorCentroUsecase: BuscarAnomaliaPorCentroUsecase,
     @Inject(OverViewAcompanhamentoUsecase)
     private readonly overView: OverViewAcompanhamentoUsecase,
+    @Inject(DashDaniloUsecase)
+    private readonly dashDaniloDemanda: DashDaniloUsecase,
   ) {}
 
   @ApiOperation({
@@ -120,5 +124,24 @@ export class DashboardController {
     @Param('processo') processo: string,
   ): Promise<DashBoardDiaPorCentrodtoZodDto> {
     return this.overView.execute(centerId, data, processo);
+  }
+
+  @ApiOperation({
+    summary: 'Dash Produtividade Danilo',
+    operationId: 'dashDaniloDemanda',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'DashDemandaDanilo',
+    type: DashDaniloProdutividadeZodDto,
+  })
+  @ApiCommonErrors()
+  @Get('demanda-produtividade-danilo/:centerId/:dataInicio/:dataFim')
+  async dashDaniloProdutividade(
+    @Param('centerId') centerId: string,
+    @Param('dataInicio') dataInicio: string,
+    @Param('dataFim') dataFim: string,
+  ): Promise<DashDaniloProdutividadeZodDto> {
+    return this.dashDaniloDemanda.execute(dataInicio, dataFim, centerId);
   }
 }

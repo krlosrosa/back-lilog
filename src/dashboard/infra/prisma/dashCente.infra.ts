@@ -14,6 +14,8 @@ import { StatusPorTransporteZodDto } from 'src/dashboard/dtos/statusPorTransport
 import { DashCentrosZodDto } from 'src/dashboard/dtos/dashCentros.dto';
 import { DashUmCentrosZodDto } from 'src/dashboard/dtos/dashUmCentro.dto';
 import { AnomaliaPorCentroZodDto } from 'src/dashboard/dtos/anomaliaPorCentro.dto';
+import { DemandaEntity } from 'src/produtividade/domain/entities/demanda.entity';
+import { DemandaMapper } from 'src/produtividade/infra/mappers/demanda.mapper';
 
 @Injectable()
 export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
@@ -568,5 +570,45 @@ export class DashCenterPrismaRepository implements IDashboardRepositoryCenter {
         inicio: item.inicio?.toISOString(),
       };
     });
+  }
+
+  async dashDaniloProdutividade(
+    dataInicio: string,
+    dataFim: string,
+    centerId: string,
+  ): Promise<DemandaEntity[]> {
+    const { startOfDay } = getStartAndEndOfDay(new Date(dataInicio));
+    const { endOfDay } = getStartAndEndOfDay(new Date(dataFim));
+    const demandas = await this.prisma.demanda.findMany({
+      where: {
+        centerId: centerId,
+        paletes: {
+          some: {
+            transporte: {
+              dataExpedicao: {
+                gte: startOfDay,
+                lte: endOfDay,
+              },
+            },
+          },
+        },
+      },
+      include: {
+        paletes: {
+          include: {
+            transporte: true,
+          },
+        },
+        pausas: true,
+        funcionario: true,
+        center: true,
+      },
+    });
+    return demandas.map((demanda) =>
+      DemandaMapper.fromPrismaToEntity({
+        ...demanda,
+        dataRegistro: demanda.paletes[0].transporte.dataExpedicao.toISOString(),
+      }),
+    );
   }
 }
