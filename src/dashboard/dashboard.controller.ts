@@ -150,7 +150,7 @@ export class DashboardController {
   }
 
   @ApiOperation({
-    summary: 'Dash Pausas Danilo',
+    summary: 'Dash lista Pausas Danilo',
     operationId: 'dashDaniloPausas',
   })
   @ApiResponse({
